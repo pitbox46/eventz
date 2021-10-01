@@ -1,0 +1,26 @@
+{
+    "test_event": {
+        "title": "Test Event!!!",
+        "description": "Test description!",
+        "start_method": "",
+        "gates": [
+            {
+                "description": "First stage of the event",
+                "operator": "AND",
+                "global": false,
+                "conditions": [
+                    {
+                        "trigger": "interface_block",
+                        "start_method": "StartEvents.js#startInterfaceBlockTest",
+                        "trigger_method": "Events.js#interfaceBlockTest"
+                    }
+                ]
+            }
+        ],
+        "type": "INDIVIDUAL",
+        "winners": 1,
+        "duration": 1000,
+        "moneta_reward": 1000000,
+        "item_reward": ""
+    }
+}
