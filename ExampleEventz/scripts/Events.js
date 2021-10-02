@@ -56,3 +56,43 @@ function interfaceBlockTest(previousValues, globalData, contestantName, fluid, f
         "itemCount": previousValues === null ? 0 : previousValues.itemCount
     };
 }
+
+function foodTimerExample(previousValues, globalData, contestantName, uuid, playerName, food, hungerRestore, saturation) {
+    if(!(globalData === null) && globalData.time_up) {
+        var winningContestant;
+        var winningCount = 0;
+        for(const contestant in globalData.contestantMap) {
+            if(globalData.contestantMap.contestant > winningCount) {
+                winningContestant = contestant;
+                winningCount = globalData.contestantMap.contestant;
+            }
+        }
+        return {
+            "global_data": {
+                "winners": [
+                    winningContestant
+                ]
+            }
+        }
+    }
+    if(saturation > 0) {
+        if(globalData === null) {
+            return {
+                "global_data": {
+                    "contestantMap": {
+                        contestantName: saturation
+                    }
+                }
+            };
+        } else {
+            if(!(globalData.contestantMap === null) && isNaN(globalData.contestantMap.contestantName)) {
+                globalData.contestantMap.contestantName = saturation;
+            } else {
+                globalData.contestantMap.contestantName += saturation;
+            }
+            return {
+                "global_data": globalData
+            }
+        }
+    }
+}

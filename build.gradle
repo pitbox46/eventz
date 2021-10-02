@@ -15,7 +15,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'github.pitbox46'
-version = '1.16.5-1.0.0-SNAP2'
+version = '1.16.5-1.0.0-SNAP4'
 
 java {
     archivesBaseName = 'eventz'

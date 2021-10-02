@@ -13,3 +13,9 @@ function startInterfaceBlockTest() {
         "item_input": "minecraft:stone"
     }
 }
+
+function startFoodExample() {
+    return {
+        "timer": 1000 * 60 //One minute timer
+    }
+}

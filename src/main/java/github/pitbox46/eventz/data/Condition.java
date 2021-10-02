@@ -6,6 +6,7 @@ import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -132,13 +133,19 @@ public class Condition {
     }
 
     public void timesUp() {
+        ((ScriptObjectMirror) globalData).put("time_up", true);
         JSObject returnValue = trigger(Arrays.asList(null, globalData));
         if (returnValue.getMember("global_data") instanceof JSObject) {
             JSObject globalDataFinal = (JSObject) returnValue.getMember("global_data");
             //Todo This
             if(globalDataFinal.hasMember("winners")) {
-                String[] winners = (String[]) globalDataFinal.getMember("winners");
-                Eventz.activeEvent.finishEvent(Arrays.stream(winners).map(s -> Eventz.activeEvent.getContestant(s)).toArray(EventContestant[]::new));
+                JSObject winnerJSArray = (JSObject) globalDataFinal.getMember("winners");
+                ArrayList<EventContestant> winners = new ArrayList<>();
+                int i = 0;
+                while(winnerJSArray.hasSlot(i)) {
+                    winners.add(Eventz.activeEvent.getContestant((String) winnerJSArray.getSlot(i)));
+                }
+                Eventz.activeEvent.finishEvent(winners.toArray(new EventContestant[0]));
             }
         }
     }
