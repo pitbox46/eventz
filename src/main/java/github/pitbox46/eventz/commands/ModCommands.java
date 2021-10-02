@@ -14,6 +14,7 @@ public class ModCommands {
                 Commands.literal("eventz")
                         .then(CommandForceEventStart.register(dispatcher))
                         .then(CommandForceEventStop.register(dispatcher))
+                        .then(CommandReloadScripts.register(dispatcher))
         );
 
         dispatcher.register(Commands.literal("eventz").redirect(cmdTut));

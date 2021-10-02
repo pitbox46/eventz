@@ -3,6 +3,7 @@ package github.pitbox46.eventz.data;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.pitbox46.eventz.Eventz;
+import github.pitbox46.eventz.EventzScriptException;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import jdk.nashorn.api.scripting.JSObject;
@@ -115,24 +116,27 @@ public class Condition {
         }
     }
 
-    public JSObject trigger(List<Object> params) {
+    public JSObject trigger(List<Object> params) throws EventzScriptException {
         if(!triggerMethod.isEmpty()) {
             String[] triggerFunctionPair = triggerMethod.split("#");
             if(triggerFunctionPair.length != 2)
                 throw new RuntimeException(String.format("Start function for trigger %s is not in the form \"scriptName.js#functionName\"", trigger));
             CompiledScript script = EventRegistration.SCRIPTS.get(triggerFunctionPair[0]);
+            if(script == null) {
+                throw new EventzScriptException("Could not find script file: " + triggerFunctionPair[0]);
+            }
             try {
                 Object returnValue = ((Invocable) script.getEngine()).invokeFunction(triggerFunctionPair[1], params.toArray());
                 if(returnValue instanceof JSObject)
                     return (JSObject) returnValue;
             } catch (ScriptException | NoSuchMethodException e) {
-                e.printStackTrace();
+                throw new EventzScriptException(e.getMessage(), e);
             }
         }
         return null;
     }
 
-    public void timesUp() {
+    public void timesUp() throws EventzScriptException {
         ((ScriptObjectMirror) globalData).put("time_up", true);
         JSObject returnValue = trigger(Arrays.asList(null, globalData));
         if (returnValue.getMember("global_data") instanceof JSObject) {

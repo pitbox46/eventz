@@ -1,0 +1,4 @@
+October 2, 2021 pitbox46
+-Most errors now stop the event so the event rather than potentially crashing the game
+-Added ability to start specific script
+-Added force reload command

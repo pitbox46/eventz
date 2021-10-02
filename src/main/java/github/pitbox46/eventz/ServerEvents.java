@@ -58,20 +58,28 @@ public class ServerEvents {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent tickEvent) {
         if(tickEvent.phase == TickEvent.Phase.END) {
-            if (Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get() > 0) {
+            if (Eventz.activeEvent == null && Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get() > 0) {
                 if (previousEventTime == 0) {
                     previousEventTime = System.currentTimeMillis() / 6000;
-                    cooldown = Config.LOWER_COOLDOWN.get() + Eventz.RANDOM.nextInt(Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get());
+                    calculateCooldown();
                 } else if (previousEventTime + cooldown < System.currentTimeMillis() / 6000) {
-                    previousEventTime = System.currentTimeMillis() / 6000;
-                    cooldown = Config.LOWER_COOLDOWN.get() + Eventz.RANDOM.nextInt(Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get());
-
                     startRandomEvent();
                 }
             }
-            if (Eventz.activeEvent != null)
+            if (Eventz.activeEvent != null) {
                 Eventz.activeEvent.tick();
+            }
         }
+    }
+
+    public static void onEventStop() {
+        previousEventTime = System.currentTimeMillis() / 6000;
+        calculateCooldown();
+        Eventz.activeEvent = null;
+    }
+
+    public static void calculateCooldown() {
+        cooldown = Config.LOWER_COOLDOWN.get() + Eventz.RANDOM.nextInt(Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get());
     }
 
     public static void startRandomEvent() {
@@ -81,6 +89,11 @@ public class ServerEvents {
             Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(eventKey));
             Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
         }
+    }
+
+    public static void startSpecificEvent(String key) {
+        Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(key));
+        Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
     }
 
     @SubscribeEvent(priority = LOWEST)

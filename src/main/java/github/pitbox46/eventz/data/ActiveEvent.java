@@ -1,6 +1,7 @@
 package github.pitbox46.eventz.data;
 
 import github.pitbox46.eventz.Eventz;
+import github.pitbox46.eventz.EventzScriptException;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import github.pitbox46.eventz.data.contestant.PlayerContestant;
@@ -35,9 +36,6 @@ public class ActiveEvent {
     public final Event event;
     public final List<EventContestant> contestantList = new ArrayList<>(8);
     public ScoreObjective scoreboardObjective;
-//    public FluidStack fluid;
-    //-1 == no energy
-//    public int energy;
     public boolean checkTimedCondition = true;
 
 
@@ -64,7 +62,7 @@ public class ActiveEvent {
         scoreboardObjective = new ScoreObjective(scoreboard, "eventz", ScoreCriteria.DUMMY, new TranslationTextComponent("title.eventz.scoreboard"), ScoreCriteria.RenderType.INTEGER);
 
         if(event.gates.isEmpty()) {
-            stop();
+            stop("No events found to activate");
         } else {
             if(event.type == Event.Type.INDIVIDUAL) {
                 for (ServerPlayerEntity player : playerList.getPlayers()) {
@@ -104,12 +102,17 @@ public class ActiveEvent {
     public void tick() {
         if(System.currentTimeMillis() >= startTime + (event.duration * 60000)) {
             ServerEvents.sendGlobalMsg(new TranslationTextComponent("message.eventz.eventexpired"));
-            stop();
+            stop("Event expired with no winners");
         }
         if(checkTimedCondition && ServerEvents.tick % 20 == 3) {
             contestantList.forEach(c -> c.conditions.forEach((key, value) -> {
                 if (!value.getRight() && value.getLeft().endTime != 0 && value.getLeft().endTime <= System.currentTimeMillis()) {
-                    value.getLeft().timesUp();
+                    try {
+                        value.getLeft().timesUp();
+                    } catch (EventzScriptException e) {
+                        e.printStackTrace();
+                        stop("Event stopped due to some issue. Please consult server logs");
+                    }
                 }
             }));
         }
@@ -122,14 +125,21 @@ public class ActiveEvent {
         EventGate gate = event.gates.get(gateNumber);
         Condition condition = triggeredContestant.conditions.get(triggerName).getLeft();
 
-        List<Object> paramList = new ArrayList<>(params.length + 2);
+        List<Object> paramList = new ArrayList<>(params.length + 3);
 
         paramList.add(condition.contestantData.getOrDefault(triggeredContestant, condition.defaultObject));
         paramList.add(condition.globalData);
         paramList.add(triggeredContestant.getName()); //The name of the contestant
         paramList.addAll(Arrays.asList(params)); //Trigger specific info
 
-        JSObject returnValue = condition.trigger(paramList);
+        JSObject returnValue;
+        try {
+            returnValue = condition.trigger(paramList);
+        } catch (EventzScriptException e) {
+            e.printStackTrace();
+            stop("Event stopped due to some issue. Please consult server logs");
+            return;
+        }
         condition.contestantData.put(triggeredContestant, returnValue);
         if(returnValue != null) {
             checkTimedCondition = true;
@@ -269,7 +279,7 @@ public class ActiveEvent {
         }
 
         ServerEvents.sendGlobalMsg(new TranslationTextComponent("message.eventz.eventcomplete", winMessage.toString()));
-        stop();
+        stopQuietly();
     }
 
     public EventContestant getContestant(String name) {
@@ -316,7 +326,12 @@ public class ActiveEvent {
         return null;
     }
 
-    public void stop() {
-        Eventz.activeEvent = null;
+    public void stopQuietly() {
+        ServerEvents.onEventStop();
+    }
+
+    public void stop(String message) {
+        ServerEvents.sendGlobalMsg(new StringTextComponent(message).mergeStyle(TextFormatting.RED));
+        ServerEvents.onEventStop();
     }
 }
