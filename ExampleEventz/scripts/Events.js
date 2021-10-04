@@ -61,11 +61,14 @@ function foodTimerExample(previousValues, globalData, contestantName, uuid, play
     if(!(globalData === null) && globalData.time_up) {
         var winningContestant;
         var winningCount = 0;
-        for(const contestant in globalData.contestantMap) {
-            if(globalData.contestantMap.contestant > winningCount) {
-                winningContestant = contestant;
-                winningCount = globalData.contestantMap.contestant;
+        Object.keys(globalData.contestantMap).forEach(function(key) {
+            if(globalData.contestantMap.key > winningCount) {
+                winningContestant = key;
+                winningCount = globalData.contestantMap.key;
             }
+        })
+        for(const contestant in globalData.contestantMap) {
+            
         }
         return {
             "global_data": {

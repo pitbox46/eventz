@@ -1,4 +1,28 @@
 {
+    "eating_contest": {
+        "title": "Eating Contest",
+        "description": "Gain the most saturation!",
+        "start_method": "",
+        "gates": [
+            {
+                "description": "Player with most saturation gain in 30 minutes wins",
+                "operator": "AND",
+                "global": false,
+                "conditions": [
+                    {
+                        "trigger": "tame_mob",
+                        "start_method": "",
+                        "trigger_method": "Events.js#tameFiveWolves"
+                    }
+                ]
+            }
+        ],
+        "type": "INDIVIDUAL",
+        "winners": 1,
+        "duration": 1000,
+        "moneta_reward": 100,
+        "item_reward": ""
+    },
     "test_event": {
         "title": "Test Event!!!",
         "description": "Test description!",
@@ -10,9 +34,9 @@
                 "global": false,
                 "conditions": [
                     {
-                        "trigger": "interface_block",
-                        "start_method": "StartEvents.js#startInterfaceBlockTest",
-                        "trigger_method": "Events.js#interfaceBlockTest"
+                        "trigger": "tame_mob",
+                        "start_method": "",
+                        "trigger_method": "Events.js#tameFiveWolves"
                     }
                 ]
             }

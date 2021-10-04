@@ -42,7 +42,7 @@ public class CommandForceEventStart {
                 .literal("forceStart")
                 .requires(s -> s.hasPermissionLevel(2))
                 .then(Commands.argument("eventKey", StringArgumentType.word())
-                        .executes(CMD_RANDOM))//TODO THIS
-                .executes(CMD_KEY);
+                        .executes(CMD_KEY))//TODO THIS
+                .executes(CMD_RANDOM);
     }
 }

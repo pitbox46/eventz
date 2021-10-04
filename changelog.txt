@@ -1,3 +1,8 @@
+October 4, 2021 pitbox46
+-Fixed issue with forceStart command
+-Updated example Events.js because Nashorn doesn't include the newest JavaScript features
+-Added "broadcast_message" optional return element to functions
+
 October 2, 2021 pitbox46
 -Most errors now stop the event rather than potentially crashing the game
 -Added ability to start specific script

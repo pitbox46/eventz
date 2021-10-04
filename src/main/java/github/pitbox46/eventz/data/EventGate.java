@@ -3,6 +3,8 @@ package github.pitbox46.eventz.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import github.pitbox46.eventz.Eventz;
+import github.pitbox46.eventz.EventzScriptException;
 import jdk.nashorn.api.scripting.JSObject;
 
 import javax.annotation.Nullable;
@@ -28,15 +30,16 @@ public class EventGate extends HashMap<String, Condition> {
 
     public void enable() {
         if(enabled) return;
-        for(Condition condition : this.values()) {
-            condition.startScript();
+        try {
+            for (Condition condition : this.values()) {
+                condition.startScript();
+            }
+        } catch (EventzScriptException e) {
+            Eventz.activeEvent.stop("Event stopped due to some issue. Please consult server logs");
+            e.printStackTrace();
+            return;
         }
         enabled = true;
-    }
-
-    @Nullable
-    public Condition getCondition(String trigger) {
-        return get(trigger);
     }
 
     public void onComplete() {

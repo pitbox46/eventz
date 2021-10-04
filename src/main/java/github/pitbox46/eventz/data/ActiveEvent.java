@@ -144,8 +144,14 @@ public class ActiveEvent {
         if(returnValue != null) {
             checkTimedCondition = true;
             if (returnValue.getMember("meta_data") instanceof JSObject) {
-                JSObject currentGateMetaData = (JSObject) returnValue.getMember("meta_data");
-                if (currentGateMetaData.hasMember("completed") && currentGateMetaData.getMember("completed").equals(true)) {
+                JSObject metaData = (JSObject) returnValue.getMember("meta_data");
+
+                if (metaData.hasMember("broadcast_message") && metaData.getMember("broadcast_message") instanceof String) {
+                    ServerEvents.sendGlobalMsg(new StringTextComponent((String) metaData.getMember("broadcast_message")));
+                    metaData.removeMember("broadcast_message");
+                }
+
+                if (metaData.hasMember("completed") && metaData.getMember("completed").equals(true)) {
                     triggeredContestant.conditions.get(triggerName).setRight(true);
                     if (gate.operator == EventGate.Operator.OR) {
                         completeGate(triggeredContestant, gateNumber);
@@ -159,9 +165,9 @@ public class ActiveEvent {
                 }
 
             }
-            if (returnValue.getMember("global_data") instanceof JSObject) {
+            if (returnValue.hasMember("global_data") && returnValue.getMember("global_data") instanceof JSObject) {
                 JSObject globalData = condition.globalData = (JSObject) returnValue.getMember("global_data");
-                //Todo This
+
                 Scoreboard scoreboard = Eventz.getServer().getScoreboard();
                 if (globalData.hasMember("scoreboard")) {
                     ScoreboardData data = ScoreboardData.readFromJSObject((JSObject) globalData.getMember("scoreboard"));

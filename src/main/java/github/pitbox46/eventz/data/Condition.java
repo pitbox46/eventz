@@ -44,7 +44,7 @@ public class Condition {
         defaultObject = Eventz.DEFAULT_OBJECT_SUPPLIER.get();
     }
 
-    public void startScript() {
+    public void startScript() throws EventzScriptException {
         if(!startMethod.isEmpty()) {
             String[] scriptFunctionPair = startMethod.split("#");
             if(scriptFunctionPair.length != 2)
@@ -58,12 +58,15 @@ public class Condition {
                     defaultObject.setMember("start_data", startObject);
                 }
             } catch (ScriptException | NoSuchMethodException e) {
-                e.printStackTrace();
+                throw new EventzScriptException("Some error occurred with starting the condition ", e);
             }
         }
         if(startObject != null){
             if(startObject.hasMember("timer") && startObject.getMember("timer") instanceof Integer) {
                 endTime = System.currentTimeMillis() + (Integer) startObject.getMember("timer");
+            }
+            if(startObject.hasMember("broadcast_message") && startObject.getMember("broadcast_message") instanceof String) {
+                ServerEvents.sendGlobalMsg(new StringTextComponent((String) startObject.getMember("broadcast_message")));
             }
             //Todo make this more moddable
             if(trigger.equals("random_craft")) {
