@@ -43,6 +43,7 @@ public class Condition {
         this.startMethod = startMethod;
         this.triggerMethod = triggerMethod;
         defaultObject = Eventz.DEFAULT_OBJECT_SUPPLIER.get();
+        globalData = (JSObject) defaultObject.getMember("global_data");
     }
 
     public void startScript() throws EventzScriptException {
@@ -56,7 +57,7 @@ public class Condition {
                 Object returnValue = ((Invocable) script.getEngine()).invokeFunction(scriptFunctionPair[1]);
                 if (returnValue instanceof JSObject) {
                     startObject = (JSObject) returnValue;
-                    defaultObject.setMember("start_data", startObject);
+                    globalData.setMember("start_data", startObject);
                 }
             } catch (ScriptException | NoSuchMethodException e) {
                 throw new EventzScriptException("Some error occurred with starting the condition ", e);

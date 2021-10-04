@@ -69,6 +69,7 @@ public class ServerEvents {
             if (Eventz.activeEvent != null) {
                 Eventz.activeEvent.tick();
             }
+            tick++;
         }
     }
 

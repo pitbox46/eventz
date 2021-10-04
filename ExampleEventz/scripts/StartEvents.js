@@ -16,6 +16,6 @@ function startInterfaceBlockTest() {
 
 function startFoodExample() {
     return {
-        "timer": 1000 * 60 //One minute timer
+        "timer": 1000 * 30 //One minute timer
     }
 }
