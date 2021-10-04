@@ -66,10 +66,7 @@ function foodTimerExample(previousValues, globalData, contestantName, uuid, play
                 winningContestant = key;
                 winningCount = globalData.contestantMap.key;
             }
-        })
-        for(const contestant in globalData.contestantMap) {
-            
-        }
+        });
         return {
             "global_data": {
                 "winners": [
