@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import github.pitbox46.eventz.EventzScriptLoadingException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import org.apache.logging.log4j.LogManager;
@@ -76,9 +77,8 @@ public class Event {
                 gates.add(EventGate.readEventGate(jsonElement.getAsJsonObject()));
             }
             return new Event(name, title, description, startMethod, winners, duration, monetaReward, itemReward, type, gates);
-        } catch (UnsupportedOperationException | CommandSyntaxException e) {
-            LOGGER.warn("There was an issue processing the event!");
-            e.printStackTrace();
+        } catch (UnsupportedOperationException | CommandSyntaxException | EventzScriptLoadingException e) {
+            LOGGER.error("There was an issue processing an event with jsonObject:\n" + jsonObject, e);
         }
         return null;
     }

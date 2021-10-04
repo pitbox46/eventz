@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.EventzScriptException;
+import github.pitbox46.eventz.EventzScriptLoadingException;
 import jdk.nashorn.api.scripting.JSObject;
 
 import javax.annotation.Nullable;
@@ -51,7 +52,7 @@ public class EventGate extends HashMap<String, Condition> {
         globalCompleted = true;
     }
 
-    public static EventGate readEventGate(JsonObject jsonObject) {
+    public static EventGate readEventGate(JsonObject jsonObject) throws EventzScriptLoadingException {
         EventGate eventGate = null;
         try {
             String description = jsonObject.get("description").getAsString();
@@ -65,7 +66,7 @@ public class EventGate extends HashMap<String, Condition> {
                 eventGate.put(condition.trigger, condition);
             }
         } catch (NullPointerException | UnsupportedOperationException e) {
-            e.printStackTrace();
+            throw new EventzScriptLoadingException(e.getMessage(), e);
         }
         return eventGate;
     }

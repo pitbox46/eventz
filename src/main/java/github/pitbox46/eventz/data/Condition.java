@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.EventzScriptException;
+import github.pitbox46.eventz.EventzScriptLoadingException;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import jdk.nashorn.api.scripting.JSObject;
@@ -157,16 +158,15 @@ public class Condition {
         }
     }
 
-    public static Condition readCondition(JsonObject jsonObject) {
+    public static Condition readCondition(JsonObject jsonObject) throws EventzScriptLoadingException {
         try {
             String trigger = jsonObject.get("trigger").getAsString();
             String startMethod = jsonObject.get("start_method").getAsString();
             String triggerMethod = jsonObject.get("trigger_method").getAsString();
             return new Condition(trigger, startMethod, triggerMethod);
         } catch (NullPointerException | UnsupportedOperationException e) {
-            e.printStackTrace();
+            throw new EventzScriptLoadingException(e.getMessage(), e);
         }
-        return null;
     }
 
     private static <C extends IInventory, R extends IRecipe<C>> R recipeFromIngredients(IRecipeType<R> recipeType, JSObject jsObject) {

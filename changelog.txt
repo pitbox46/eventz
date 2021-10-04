@@ -1,4 +1,7 @@
 October 4, 2021 pitbox46
+-Better error logging/error handling
+
+October 4, 2021 pitbox46
 -Fixed issue with forceStart command
 -Updated example Events.js because Nashorn doesn't include the newest JavaScript features
 -Added "broadcast_message" optional return element to functions
