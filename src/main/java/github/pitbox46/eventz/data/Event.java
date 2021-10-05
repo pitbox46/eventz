@@ -15,6 +15,8 @@ import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Event {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -28,9 +30,9 @@ public class Event {
     public final long monetaReward;
     public final ItemStack itemReward;
     public final Type type;
-    public final ArrayList<EventGate> gates;
+    public final List<EventGate> gates;
 
-    public Event(String name, String title, String description, String startMethod, int winners, long duration, long monetaReward, ItemStack itemReward, Type type, ArrayList<EventGate> gates) {
+    public Event(String name, String title, String description, String startMethod, int winners, long duration, long monetaReward, ItemStack itemReward, Type type, List<EventGate> gates) {
         this.name = name;
         this.title = title;
         this.description = description;
@@ -41,6 +43,10 @@ public class Event {
         this.itemReward = itemReward;
         this.type = type;
         this.gates = gates;
+    }
+
+    public Event clone() {
+        return new Event(name, title, description, startMethod, winners, duration, monetaReward, itemReward, type, gates.stream().map(EventGate::clone).collect(Collectors.toList()));
     }
 
     public void startScript() {

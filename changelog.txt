@@ -2,6 +2,7 @@ October 4, 2021 pitbox46
 -Better error logging/error handling
 -Timed events now work
 -Localization for winner message
+-Calling get on the registered event map will now return a copy of the event so objects don't get shared between multiple instances of the same event.
 
 October 4, 2021 pitbox46
 -Fixed issue with forceStart command

@@ -29,6 +29,14 @@ public class EventGate extends HashMap<String, Condition> {
         this.global = global;
     }
 
+    public EventGate clone() {
+        EventGate clone = new EventGate(description, operator, global);
+        for(Entry<String, Condition> entry: this.entrySet()) {
+            clone.put(entry.getKey(), entry.getValue().clone());
+        }
+        return clone;
+    }
+
     public void enable() {
         if(enabled) return;
         try {
@@ -53,7 +61,7 @@ public class EventGate extends HashMap<String, Condition> {
     }
 
     public static EventGate readEventGate(JsonObject jsonObject) throws EventzScriptLoadingException {
-        EventGate eventGate = null;
+        EventGate eventGate;
         try {
             String description = jsonObject.get("description").getAsString();
             Operator operator = Operator.valueOf(jsonObject.get("operator").getAsString());

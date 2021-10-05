@@ -46,6 +46,10 @@ public class Condition {
         globalData = (JSObject) defaultObject.getMember("global_data");
     }
 
+    public Condition clone() {
+        return new Condition(trigger, startMethod, triggerMethod);
+    }
+
     public void startScript() throws EventzScriptException {
         if(!startMethod.isEmpty()) {
             String[] scriptFunctionPair = startMethod.split("#");

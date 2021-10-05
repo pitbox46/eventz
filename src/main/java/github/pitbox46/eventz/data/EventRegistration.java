@@ -19,7 +19,18 @@ import java.util.Objects;
 
 public class EventRegistration {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    public static final Map<String, Event> EVENTS = new HashMap<>();
+    //Always create a copy of the event to prevent data from spilling over when the same event is called twice.
+    public static final Map<String, Event> EVENTS = new HashMap<String, Event>() {
+        @Override
+        public Event get(Object key) {
+            return super.get(key).clone();
+        }
+
+        @Override
+        public Event getOrDefault(Object key, Event defaultValue) {
+            return containsKey(key) ? get(key) : defaultValue;
+        }
+    };
     public static final Map<String, CompiledScript> SCRIPTS = new HashMap<>();
 
     public static void register(File folder) {
