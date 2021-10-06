@@ -105,7 +105,7 @@ public class ServerEvents {
 
     @SubscribeEvent(priority = LOWEST)
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if(event.side == LogicalSide.SERVER && Eventz.activeEvent != null) {
+        if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END && Eventz.activeEvent != null) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.player;
             EventContestant contestant = Eventz.activeEvent.getContestant(player);
 
@@ -116,7 +116,7 @@ public class ServerEvents {
                 }
                 if (contestant.hasUnfilledCondition("area_check")) {
                     //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, double posX, double posY, double posZ, String biome, boolean inVillage
-                    Eventz.activeEvent.trigger(contestant, "area_check", contestant, player.getUniqueID().toString(), player.getGameProfile().getName(), player.getPosX(), player.getPosY(), player.getPosZ(), player.getEntityWorld().getBiome(player.getPosition()).toString(), player.getServerWorld().isVillage(player.getPosition()));
+                    Eventz.activeEvent.trigger(contestant, "area_check", player.getUniqueID().toString(), player.getGameProfile().getName(), player.getPosX(), player.getPosY(), player.getPosZ(), player.getEntityWorld().getBiome(player.getPosition()).toString(), player.getServerWorld().isVillage(player.getPosition()));
                 }
                 if (contestant.hasUnfilledCondition("held_item_check")) {
                     ItemStack main = player.getHeldItemMainhand();

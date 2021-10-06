@@ -1,5 +1,6 @@
 October 6, 2021 pitbox46
 -Scoreboard now works
+-Fixed issue with parameters for area_check
 
 October 5, 2021 pitbox46
 -Fixed bug with returning winners on a timed event
