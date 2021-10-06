@@ -1,3 +1,6 @@
+October 6, 2021 pitbox46
+-Scoreboard now works
+
 October 5, 2021 pitbox46
 -Fixed bug with returning winners on a timed event
 

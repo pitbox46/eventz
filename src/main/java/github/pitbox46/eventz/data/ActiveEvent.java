@@ -181,7 +181,7 @@ public class ActiveEvent {
                     }
                     scoreboard.setObjectiveInDisplaySlot(1, scoreboardObjective);
                 } else {
-                    scoreboard.setObjectiveInDisplaySlot(1, null);
+                    scoreboard.removeObjective(scoreboardObjective);
                 }
             }
         }

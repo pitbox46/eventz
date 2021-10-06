@@ -16,8 +16,8 @@ public class ScoreboardData {
         Map<String, Integer> scores = new HashMap<>();
         for(String key: scoreboardData.keySet()) {
             Object value = scoreboardData.getMember(key);
-            if(value instanceof Integer)
-                scores.put(key, (Integer) scoreboardData.getMember(key));
+            if(value instanceof Number)
+                scores.put(key, ((Number) scoreboardData.getMember(key)).intValue());
         }
         return new ScoreboardData(scores);
     }

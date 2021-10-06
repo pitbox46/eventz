@@ -11,6 +11,7 @@ import net.minecraft.fluid.EmptyFluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
@@ -34,6 +35,7 @@ import net.minecraftforge.fml.loading.FileUtils;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Objects;
 
 import static net.minecraftforge.eventbus.api.EventPriority.LOWEST;
 
@@ -77,6 +79,10 @@ public class ServerEvents {
         previousEventTime = System.currentTimeMillis() / 6000;
         calculateCooldown();
         Eventz.activeEvent = null;
+        Scoreboard scoreboard = Eventz.getServer().getScoreboard();
+        if (scoreboard.getObjectiveInDisplaySlot(1) != null) {
+            scoreboard.removeObjective(Objects.requireNonNull(scoreboard.getObjectiveInDisplaySlot(1)));
+        }
     }
 
     public static void calculateCooldown() {

@@ -159,6 +159,9 @@ public class Condition {
                     winners.add(Eventz.activeEvent.getContestant((String) winnerJSArray.getSlot(i)));
                     i++;
                 }
+                if(Eventz.activeEvent == null) {
+                    throw new EventzScriptException("Active event is null!");
+                }
                 Eventz.activeEvent.finishEvent(winners.toArray(new EventContestant[0]));
             }
         }
