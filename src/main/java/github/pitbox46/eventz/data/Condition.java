@@ -155,8 +155,9 @@ public class Condition {
                 JSObject winnerJSArray = (JSObject) globalDataFinal.getMember("winners");
                 ArrayList<EventContestant> winners = new ArrayList<>();
                 int i = 0;
-                while(winnerJSArray.hasSlot(i)) {
+                while(winnerJSArray.hasSlot(i) && winnerJSArray.getSlot(i) instanceof String) {
                     winners.add(Eventz.activeEvent.getContestant((String) winnerJSArray.getSlot(i)));
+                    i++;
                 }
                 Eventz.activeEvent.finishEvent(winners.toArray(new EventContestant[0]));
             }

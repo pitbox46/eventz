@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public class Eventz {
     private static MinecraftServer server;
     public static final Random RANDOM = new Random();
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
     public static final NashornScriptEngine NASHORN = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
     private static final CompiledScript DEFAULT_OBJECT_SCRIPT;
     public static final Supplier<JSObject> DEFAULT_OBJECT_SUPPLIER;

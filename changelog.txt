@@ -1,3 +1,6 @@
+October 5, 2021 pitbox46
+-Fixed bug with returning winners on a timed event
+
 October 4, 2021 pitbox46
 -Better error logging/error handling
 -Timed events now work
