@@ -105,7 +105,7 @@ public class ServerEvents {
 
     @SubscribeEvent(priority = LOWEST)
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END && Eventz.activeEvent != null) {
+        if(tick % 20 == 11 && event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END && Eventz.activeEvent != null) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.player;
             EventContestant contestant = Eventz.activeEvent.getContestant(player);
 
@@ -143,8 +143,8 @@ public class ServerEvents {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getTrueSource();
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("kill_entity")) {
-                //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType
-                Eventz.activeEvent.trigger(contestant, "kill_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getEntityString());
+                //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType, String entityName, int entityID
+                Eventz.activeEvent.trigger(contestant, "kill_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getEntityString(), event.getEntityLiving().getName().getString(), event.getEntityLiving().getEntityId());
             }
         }
     }
@@ -155,8 +155,8 @@ public class ServerEvents {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getTrueSource();
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("damage_entity")) {
-                //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType, float amount, boolean willDie
-                Eventz.activeEvent.trigger(contestant, "damage_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getEntityString(), event.getAmount(), event.getEntityLiving().getHealth() <= event.getAmount());
+                //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType, String entityName, int entityID, float amount, boolean willDie
+                Eventz.activeEvent.trigger(contestant, "damage_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getEntityString(), event.getEntityLiving().getName().getString(), event.getEntityLiving().getEntityId(), event.getAmount(), event.getEntityLiving().getHealth() <= event.getAmount());
             }
         }
     }

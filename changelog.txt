@@ -1,3 +1,10 @@
+October 8, 2021 pitbox46
+-Added entityName and entityID to both 'kill_entity' and 'damage_entity'
+-Tick events now only check every second to avoid performance issues
+
+October 7, 2021 pitbox46
+-Timer event bug fixed
+
 October 6, 2021 pitbox46
 -Scoreboard now works
 -Fixed issue with parameters for area_check

@@ -106,7 +106,7 @@ public class ActiveEvent {
         }
         if(checkTimedCondition && ServerEvents.tick % 20 == 3) {
             contestantList.forEach(c -> c.conditions.forEach((key, value) -> {
-                if (!value.getRight() && value.getLeft().endTime != 0 && value.getLeft().endTime <= System.currentTimeMillis()) {
+                if (!value.getRight() && !value.getLeft().ended && value.getLeft().endTime != 0 && value.getLeft().endTime <= System.currentTimeMillis()) {
                     try {
                         value.getLeft().timesUp();
                     } catch (EventzScriptException e) {

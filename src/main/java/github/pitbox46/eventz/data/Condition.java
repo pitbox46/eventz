@@ -31,12 +31,13 @@ public class Condition {
     public final String startMethod;
     public final String triggerMethod;
     public JSObject startObject;
-    public JSObject globalData = null;
+    public JSObject globalData;
     public IRecipe<?> recipe = null;
     public Map<EventContestant, JSObject> contestantData = new HashMap<>();
     public JSObject defaultObject;
     public BlockPos genericPos;
     public long endTime = 0;
+    public boolean ended = false;
 
     public Condition(String trigger, String startMethod, String triggerMethod) {
         this.trigger = trigger;
@@ -165,6 +166,7 @@ public class Condition {
                 Eventz.activeEvent.finishEvent(winners.toArray(new EventContestant[0]));
             }
         }
+        ended = true;
     }
 
     public static Condition readCondition(JsonObject jsonObject) throws EventzScriptLoadingException {
