@@ -52,7 +52,12 @@ public class ActiveEvent {
         for(ServerPlayerEntity player: Eventz.getServer().getPlayerList().getPlayers()) {
             player.connection.sendPacket(new SPlaySoundEffectPacket(SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.BLOCKS, player.getPosX(), player.getPosY(), player.getPosZ(), 64.0F, 1.0F));
         }
-        event.startScript();
+        try {
+            event.startScript();
+        } catch (EventzScriptException e) {
+            e.printStackTrace();
+            stopError();
+        }
 
         Scoreboard scoreboard = Eventz.getServer().getScoreboard();
         scoreboard.setObjectiveInDisplaySlot(0, null);
@@ -113,7 +118,7 @@ public class ActiveEvent {
                         value.getLeft().timesUp();
                     } catch (EventzScriptException e) {
                         e.printStackTrace();
-                        stop("Event stopped due to some issue. Please consult server logs");
+                        stopError();
                     }
                 }
             }));
@@ -130,7 +135,7 @@ public class ActiveEvent {
         List<Object> paramList = new ArrayList<>(params.length + 3);
 
         paramList.add(condition.contestantData.getOrDefault(triggeredContestant, condition.defaultObject));
-        paramList.add(condition.globalData);
+        paramList.add(this.event.globalData);
         paramList.add(triggeredContestant.getName()); //The name of the contestant
         paramList.addAll(Arrays.asList(params)); //Trigger specific info
 
@@ -139,7 +144,7 @@ public class ActiveEvent {
             returnValue = condition.trigger(paramList);
         } catch (EventzScriptException e) {
             e.printStackTrace();
-            stop("Event stopped due to some issue. Please consult server logs");
+            stopError();
             return;
         }
         condition.contestantData.put(triggeredContestant, returnValue);
@@ -168,7 +173,7 @@ public class ActiveEvent {
 
             }
             if (returnValue.hasMember("global_data") && returnValue.getMember("global_data") instanceof JSObject) {
-                JSObject globalData = condition.globalData = (JSObject) returnValue.getMember("global_data");
+                JSObject globalData = this.event.globalData = (JSObject) returnValue.getMember("global_data");
 
                 Scoreboard scoreboard = Eventz.getServer().getScoreboard();
                 if (globalData.hasMember("scoreboard")) {
@@ -344,5 +349,9 @@ public class ActiveEvent {
     public void stop(String message) {
         ServerEvents.sendGlobalMsg(new StringTextComponent(message).mergeStyle(TextFormatting.RED));
         ServerEvents.onEventStop();
+    }
+
+    public void stopError() {
+        stop("Event stopped due to some issue. Please consult server logs");
     }
 }

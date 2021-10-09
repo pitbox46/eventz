@@ -35,8 +35,8 @@ public class Condition {
     public final String trigger;
     public final String startMethod;
     public final String triggerMethod;
+    public final EventGate eventGate;
     public JSObject startObject;
-    public JSObject globalData;
     public IRecipe<?> recipe = null;
     public double boundaryMinX = Double.NaN;
     public double boundaryMaxX = Double.NaN;
@@ -48,16 +48,16 @@ public class Condition {
     public long endTime = 0;
     public boolean ended = false;
 
-    public Condition(String trigger, String startMethod, String triggerMethod) {
+    public Condition(String trigger, String startMethod, String triggerMethod, EventGate eventGate) {
         this.trigger = trigger;
         this.startMethod = startMethod;
         this.triggerMethod = triggerMethod;
-        defaultObject = Eventz.DEFAULT_OBJECT_SUPPLIER.get();
-        globalData = (JSObject) defaultObject.getMember("global_data");
+        this.eventGate = eventGate;
+        defaultObject = Eventz.getDefaultObject("getDefaultConditionObject");
     }
 
-    public Condition clone() {
-        return new Condition(trigger, startMethod, triggerMethod);
+    public Condition clone(EventGate eventGate) {
+        return new Condition(trigger, startMethod, triggerMethod, eventGate);
     }
 
     public void startScript() throws EventzScriptException {
@@ -71,7 +71,9 @@ public class Condition {
                 Object returnValue = ((Invocable) script.getEngine()).invokeFunction(scriptFunctionPair[1]);
                 if (returnValue instanceof JSObject) {
                     startObject = (JSObject) returnValue;
-                    globalData.setMember("start_data", startObject);
+                    JSObject eventGateObject = Eventz.createEmptyObject();
+                    eventGateObject.setMember(trigger, startObject);
+                    ((JSObject) Eventz.activeEvent.event.globalData.getMember("start_data")).setMember(String.valueOf(eventGate.index), eventGateObject);
                 }
             } catch (ScriptException | NoSuchMethodException e) {
                 throw new EventzScriptException("Some error occurred with starting the condition ", e);
@@ -168,6 +170,7 @@ public class Condition {
 
     public void timesUp() throws EventzScriptException {
         boolean flag = true;
+        JSObject globalData = (JSObject) ((JSObject) Eventz.activeEvent.event.globalData.getMember(String.valueOf(eventGate.index))).getMember(trigger);
         ((ScriptObjectMirror) globalData).put("time_up", true);
         JSObject returnValue = trigger(Arrays.asList(null, globalData));
         if (returnValue.getMember("global_data") instanceof JSObject) {
@@ -194,12 +197,12 @@ public class Condition {
         }
     }
 
-    public static Condition readCondition(JsonObject jsonObject) throws EventzScriptLoadingException {
+    public static Condition readCondition(JsonObject jsonObject, EventGate eventGate) throws EventzScriptLoadingException {
         try {
             String trigger = jsonObject.get("trigger").getAsString();
             String startMethod = jsonObject.get("start_method").getAsString();
             String triggerMethod = jsonObject.get("trigger_method").getAsString();
-            return new Condition(trigger, startMethod, triggerMethod);
+            return new Condition(trigger, startMethod, triggerMethod, eventGate);
         } catch (NullPointerException | UnsupportedOperationException e) {
             throw new EventzScriptLoadingException(e.getMessage(), e);
         }

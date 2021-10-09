@@ -25,22 +25,24 @@ public class EventGate extends HashMap<String, Condition> {
     public final String description;
     public final Operator operator;
     public final boolean global;
+    public final int index;
     /**
      * For use with global setting. Tells new contestants to move past the gate.
      */
     public boolean globalCompleted = false;
     public boolean enabled = false;
 
-    public EventGate(String description, Operator operator, boolean global) {
+    public EventGate(String description, Operator operator, boolean global, int index) {
         this.description = description;
         this.operator = operator;
         this.global = global;
+        this.index = index;
     }
 
     public EventGate clone() {
-        EventGate clone = new EventGate(description, operator, global);
+        EventGate clone = new EventGate(description, operator, global, index);
         for(Entry<String, Condition> entry: this.entrySet()) {
-            clone.put(entry.getKey(), entry.getValue().clone());
+            clone.put(entry.getKey(), entry.getValue().clone(clone));
         }
         return clone;
     }
@@ -52,7 +54,7 @@ public class EventGate extends HashMap<String, Condition> {
                     condition.startScript();
                 }
             } catch (EventzScriptException e) {
-                Eventz.activeEvent.stop("Event stopped due to some issue. Please consult server logs");
+                Eventz.activeEvent.stopError();
                 e.printStackTrace();
                 return;
             }
@@ -84,17 +86,16 @@ public class EventGate extends HashMap<String, Condition> {
         globalCompleted = true;
     }
 
-    public static EventGate readEventGate(JsonObject jsonObject) throws EventzScriptLoadingException {
+    public static EventGate readEventGate(JsonObject jsonObject, int index) throws EventzScriptLoadingException {
         EventGate eventGate;
         try {
             String description = jsonObject.get("description").getAsString();
             Operator operator = Operator.valueOf(jsonObject.get("operator").getAsString());
             boolean global = jsonObject.get("global").getAsBoolean();
             JsonArray array = jsonObject.get("conditions").getAsJsonArray();
-            eventGate = new EventGate(description, operator, global);
+            eventGate = new EventGate(description, operator, global, index);
             for(JsonElement element: array) {
-                Condition condition = Condition.readCondition((JsonObject) element);
-                assert condition != null;
+                Condition condition = Condition.readCondition((JsonObject) element, eventGate);
                 eventGate.put(condition.trigger, condition);
             }
         } catch (NullPointerException | UnsupportedOperationException e) {

@@ -28,26 +28,19 @@ public class Eventz {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final NashornScriptEngine NASHORN = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
     private static final CompiledScript DEFAULT_OBJECT_SCRIPT;
-    public static final Supplier<JSObject> DEFAULT_OBJECT_SUPPLIER;
     private static MinecraftServer server;
     public static ActiveEvent activeEvent;
     public static CommonProxy PROXY;
 
     static {
         try {
-            DEFAULT_OBJECT_SCRIPT = Eventz.NASHORN.compile("function getDefaultObject() {return {\"meta_data\":{},\"start_data\":{},\"global_data\":{}};}");
+            DEFAULT_OBJECT_SCRIPT = Eventz.NASHORN.compile(
+                    "function getDefaultConditionObject() {return {\"meta_data\":{},\"start_data\":{}};}"
+                    + "function getDefaultEventObject() {return {\"start_data\":{},\"global_data\":{}};}"
+                    + "function createEmptyObject() {return {};}");
         } catch (ScriptException e) {
             throw new RuntimeException();
         }
-        DEFAULT_OBJECT_SUPPLIER = () -> {
-            try {
-                DEFAULT_OBJECT_SCRIPT.eval();
-                return (JSObject) ((Invocable) DEFAULT_OBJECT_SCRIPT.getEngine()).invokeFunction("getDefaultObject");
-            } catch (ScriptException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-            return null;
-        };
     }
 
     public Eventz() {
@@ -56,6 +49,21 @@ public class Eventz {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Registration.init();
+    }
+
+    public static JSObject getDefaultObject(String function) {
+        try {
+            DEFAULT_OBJECT_SCRIPT.eval();
+            return (JSObject) ((Invocable) DEFAULT_OBJECT_SCRIPT.getEngine()).invokeFunction(function);
+        } catch (ScriptException | NoSuchMethodException e) {
+            e.printStackTrace();
+            activeEvent.stopError();
+        }
+        return null;
+    }
+
+    public static JSObject createEmptyObject() {
+        return getDefaultObject("createEmptyObject");
     }
 
     public static void setServer(MinecraftServer server) {
