@@ -6,6 +6,8 @@ import github.pitbox46.eventz.data.ActiveEvent;
 import github.pitbox46.eventz.data.Condition;
 import github.pitbox46.eventz.data.EventRegistration;
 import github.pitbox46.eventz.data.contestant.EventContestant;
+import github.pitbox46.eventz.network.PacketHandler;
+import github.pitbox46.eventz.network.server.SStopBoundary;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.EmptyFluid;
 import net.minecraft.item.BucketItem;
@@ -32,6 +34,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.loading.FileUtils;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -40,9 +43,10 @@ import java.util.Objects;
 import static net.minecraftforge.eventbus.api.EventPriority.LOWEST;
 
 public class ServerEvents {
+    public static long tick = 0;
+    public static FakePlayer fakePlayer;
     private static long previousEventTime = 0;
     private static int cooldown;
-    public static long tick = 0;
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
@@ -60,6 +64,9 @@ public class ServerEvents {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent tickEvent) {
         if(tickEvent.phase == TickEvent.Phase.END) {
+            if(fakePlayer == null) {
+                fakePlayer = new FakePlayer(Eventz.getServer().getWorlds().iterator().next(), new GameProfile(Util.DUMMY_UUID, "Eventz"));
+            }
             if (Eventz.activeEvent == null && Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get() > 0) {
                 if (previousEventTime == 0) {
                     previousEventTime = System.currentTimeMillis() / 6000;
@@ -83,6 +90,7 @@ public class ServerEvents {
         if (scoreboard.getObjectiveInDisplaySlot(1) != null) {
             scoreboard.removeObjective(Objects.requireNonNull(scoreboard.getObjectiveInDisplaySlot(1)));
         }
+        PacketHandler.CHANNEL.send(PacketDistributor.ALL.noArg(), new SStopBoundary());
     }
 
     public static void calculateCooldown() {
@@ -249,6 +257,6 @@ public class ServerEvents {
 
     public static void sendGlobalMsg(ITextComponent msg) {
         Eventz.getServer().getPlayerList().func_232641_a_(msg, ChatType.CHAT, Util.DUMMY_UUID);
-        MinecraftForge.EVENT_BUS.post(new ServerChatEvent(new FakePlayer(Eventz.getServer().getWorlds().iterator().next(), new GameProfile(Util.DUMMY_UUID, "Eventz")), msg.getUnformattedComponentText(), null));
+        MinecraftForge.EVENT_BUS.post(new ServerChatEvent(fakePlayer, msg.getUnformattedComponentText(), null));
     }
 }

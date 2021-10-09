@@ -7,6 +7,8 @@ import github.pitbox46.eventz.EventzScriptException;
 import github.pitbox46.eventz.EventzScriptLoadingException;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
+import github.pitbox46.eventz.network.PacketHandler;
+import github.pitbox46.eventz.network.server.SSendBoundaryInfo;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.minecraft.block.Blocks;
@@ -18,7 +20,10 @@ import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.border.BorderStatus;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.script.CompiledScript;
@@ -33,6 +38,10 @@ public class Condition {
     public JSObject startObject;
     public JSObject globalData;
     public IRecipe<?> recipe = null;
+    public double boundaryMinX = Double.NaN;
+    public double boundaryMaxX = Double.NaN;
+    public double boundaryMinZ = Double.NaN;
+    public double boundaryMaxZ = Double.NaN;
     public Map<EventContestant, JSObject> contestantData = new HashMap<>();
     public JSObject defaultObject;
     public BlockPos genericPos;
@@ -74,6 +83,17 @@ public class Condition {
             }
             if(startObject.hasMember("broadcast_message") && startObject.getMember("broadcast_message") instanceof String) {
                 ServerEvents.sendGlobalMsg(new StringTextComponent((String) startObject.getMember("broadcast_message")));
+            }
+            if(startObject.hasMember("visible_boundary") && startObject.getMember("visible_boundary") instanceof JSObject) {
+                JSObject boundary = (JSObject) startObject.getMember("visible_boundary");
+                try {
+                    boundaryMinX = (int) boundary.getMember("x_min");
+                    boundaryMaxX = (int) boundary.getMember("x_max");
+                    boundaryMinZ = (int) boundary.getMember("z_min");
+                    boundaryMaxZ = (int) boundary.getMember("z_max");
+                } catch (ClassCastException e) {
+                    Eventz.LOGGER.warn("Something is wrong with 'visible_boundary' start parameter! Skipping it!");
+                }
             }
             //Todo make this more moddable
             if(trigger.equals("random_craft")) {
@@ -147,6 +167,7 @@ public class Condition {
     }
 
     public void timesUp() throws EventzScriptException {
+        boolean flag = true;
         ((ScriptObjectMirror) globalData).put("time_up", true);
         JSObject returnValue = trigger(Arrays.asList(null, globalData));
         if (returnValue.getMember("global_data") instanceof JSObject) {
@@ -164,9 +185,13 @@ public class Condition {
                     throw new EventzScriptException("Active event is null!");
                 }
                 Eventz.activeEvent.finishEvent(winners.toArray(new EventContestant[0]));
+                flag = false;
             }
         }
         ended = true;
+        if(flag) {
+            Eventz.activeEvent.finishEvent();
+        }
     }
 
     public static Condition readCondition(JsonObject jsonObject) throws EventzScriptLoadingException {

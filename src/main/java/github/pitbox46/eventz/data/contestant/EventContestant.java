@@ -6,6 +6,7 @@ import github.pitbox46.eventz.data.EventGate;
 import it.unimi.dsi.fastutil.objects.AbstractReference2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class EventContestant {
@@ -39,6 +41,8 @@ public abstract class EventContestant {
     public boolean hasUnfilledCondition(String condition) {
         return conditions.containsKey(condition) && !conditions.get(condition).getRight();
     }
+
+    abstract public List<ServerPlayerEntity> getPlayers();
 
     public void iterate() {
         gateNumber++;

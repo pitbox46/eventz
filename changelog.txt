@@ -1,3 +1,8 @@
+October 9, 2021 pitbox46
+-Added option to add visual only world border via condition's start function. Useful for area events
+-Fixed bug where event wouldn't stop if the timer went off and the function didn't return winners
+-Fixed a performance issue where sending a global message would create a new FakePlayer every invocation
+
 October 8, 2021 pitbox46
 -Added entityName and entityID to both 'kill_entity' and 'damage_entity'
 -Tick events now only check every second to avoid performance issues

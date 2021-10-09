@@ -5,6 +5,9 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.Collections;
+import java.util.List;
+
 public class PlayerContestant extends EventContestant {
     public final ServerPlayerEntity player;
 
@@ -15,6 +18,11 @@ public class PlayerContestant extends EventContestant {
     @Override
     public void onStartGate(EventGate gate) {
         player.sendStatusMessage(formatMessage(gate.description), false);
+    }
+
+    @Override
+    public List<ServerPlayerEntity> getPlayers() {
+        return Collections.singletonList(player);
     }
 
     @Override

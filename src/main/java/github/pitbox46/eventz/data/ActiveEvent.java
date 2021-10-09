@@ -87,8 +87,10 @@ public class ActiveEvent {
                 contestantList.add(new ServerContestant());
             }
             EventGate firstGate = event.gates.get(0);
-            contestantList.forEach(c -> c.onStartGate(firstGate));
-            firstGate.enable();
+            contestantList.forEach(c -> {
+                c.onStartGate(firstGate);
+                firstGate.enable(c.getPlayers());
+            });
         }
 
         startTime = System.currentTimeMillis();
@@ -195,9 +197,9 @@ public class ActiveEvent {
         } else {
             EventGate newGate =  event.gates.get(gateNumber + 1);
             contestant.onStartGate(newGate);
-            newGate.enable();
+            newGate.enable(contestant.getPlayers());
         }
-        oldGate.onComplete();
+        oldGate.onComplete(contestant.getPlayers());
     }
 
     public void updateGatesAndCheckWinners() {
@@ -211,7 +213,7 @@ public class ActiveEvent {
                         if (contestant.gateNumber < event.gates.size()) {
                             EventGate newGate = event.gates.get(i + 1);
                             contestant.onStartGate(newGate);
-                            newGate.enable();
+                            newGate.enable(contestant.getPlayers());
                         }
                     }
                 }
@@ -237,7 +239,7 @@ public class ActiveEvent {
                 if (contestant.gateNumber < event.gates.size()) {
                     EventGate newGate = event.gates.get(i + 1);
                     contestant.onStartGate(newGate);
-                    newGate.enable();
+                    newGate.enable(contestant.getPlayers());
                 }
             } else {
                 break;
@@ -261,12 +263,12 @@ public class ActiveEvent {
                 Team team = ((TeamContestant) contestant).team;
                 team.balance += event.monetaReward;
                 Teams.updateTeam(Teams.jsonFile, team);
-                ServerPlayerEntity randomPlayer = Eventz.getServer().getPlayerList().getPlayers().stream().filter(player -> team.members.contains(player.getGameProfile().getName())).findAny().get();
+                ServerPlayerEntity randomPlayer = contestant.getPlayers().stream().filter(player -> team.members.contains(player.getGameProfile().getName())).findAny().get();
                 randomPlayer.inventory.placeItemBackInInventory(randomPlayer.getEntityWorld(), event.itemReward);
 
                 team.members.forEach(s -> winMessage.append(s).append(", "));
             } else if(contestant.getClass() == ServerContestant.class) {
-                for(ServerPlayerEntity player: Eventz.getServer().getPlayerList().getPlayers()) {
+                for(ServerPlayerEntity player: contestant.getPlayers()) {
                     if(player != null) {
                         String playerName = player.getGameProfile().getName();
                         Ledger.addBalance(Ledger.jsonFile, playerName, event.monetaReward);
@@ -297,9 +299,8 @@ public class ActiveEvent {
         switch(event.type) {
             case TEAM: {
                 for(EventContestant contestant: contestantList) {
-                    if(((TeamContestant) contestant).players.contains(player)) {
+                    if(contestant.getPlayers().contains(player))
                         return contestant;
-                    }
                 }
                 // Search for player's team and add them to it
                 Team team = Teams.getPlayersTeam(Teams.jsonFile, player.getGameProfile().getName());
@@ -311,7 +312,9 @@ public class ActiveEvent {
                             return contestant;
                         }
                     }
-                    addLateEntry(new TeamContestant(team, Collections.singletonList(player)));
+                    EventContestant contestant = new TeamContestant(team, Collections.singletonList(player));
+                    addLateEntry(contestant);
+                    return contestant;
                 }
             } break;
             case SERVER: {
@@ -323,8 +326,10 @@ public class ActiveEvent {
                         return contestant;
                     }
                 }
-                addLateEntry(new PlayerContestant(player));
-            } break;
+                EventContestant contestant = new PlayerContestant(player);
+                addLateEntry(contestant);
+                return contestant;
+            }
             default: {
                 throw new RuntimeException("No case for enum");
             }

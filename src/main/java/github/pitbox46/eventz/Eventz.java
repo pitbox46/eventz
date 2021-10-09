@@ -1,10 +1,13 @@
 package github.pitbox46.eventz;
 
 import github.pitbox46.eventz.data.ActiveEvent;
+import github.pitbox46.eventz.network.ClientProxy;
+import github.pitbox46.eventz.network.CommonProxy;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -21,13 +24,14 @@ import java.util.function.Supplier;
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("eventz")
 public class Eventz {
-    private static MinecraftServer server;
     public static final Random RANDOM = new Random();
     public static final Logger LOGGER = LogManager.getLogger();
     public static final NashornScriptEngine NASHORN = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
     private static final CompiledScript DEFAULT_OBJECT_SCRIPT;
     public static final Supplier<JSObject> DEFAULT_OBJECT_SUPPLIER;
+    private static MinecraftServer server;
     public static ActiveEvent activeEvent;
+    public static CommonProxy PROXY;
 
     static {
         try {
@@ -48,6 +52,7 @@ public class Eventz {
 
     public Eventz() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
+        PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Registration.init();

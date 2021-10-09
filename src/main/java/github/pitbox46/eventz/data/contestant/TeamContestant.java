@@ -26,6 +26,11 @@ public class TeamContestant extends EventContestant {
     }
 
     @Override
+    public List<ServerPlayerEntity> getPlayers() {
+        return new ArrayList<>(players);
+    }
+
+    @Override
     public String getName() {
         return team.leader + "'s Team";
     }

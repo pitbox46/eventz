@@ -11,6 +11,7 @@
     "RaidMixin"
   ],
   "client": [
+    "WorldRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
