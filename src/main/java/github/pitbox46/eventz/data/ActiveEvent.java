@@ -25,16 +25,15 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class ActiveEvent {
-    public long startTime;
     public final Event event;
     public final List<EventContestant> contestantList = new ArrayList<>(8);
+    public long startTime;
     public ScoreObjective scoreboardObjective;
     public boolean checkTimedCondition = true;
 
@@ -49,7 +48,7 @@ public class ActiveEvent {
         ServerEvents.sendGlobalMsg(title.deepCopy().appendString("\n").appendSibling(subtitle));
         Eventz.getServer().getPlayerList().sendPacketToAllPlayers(new STitlePacket(STitlePacket.Type.TITLE, title, 20, 60, 20));
         Eventz.getServer().getPlayerList().sendPacketToAllPlayers(new STitlePacket(STitlePacket.Type.SUBTITLE, subtitle, 20, 60, 20));
-        for(ServerPlayerEntity player: Eventz.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayerEntity player : Eventz.getServer().getPlayerList().getPlayers()) {
             player.connection.sendPacket(new SPlaySoundEffectPacket(SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.BLOCKS, player.getPosX(), player.getPosY(), player.getPosZ(), 64.0F, 1.0F));
         }
         try {
@@ -66,29 +65,27 @@ public class ActiveEvent {
 
         scoreboardObjective = new ScoreObjective(scoreboard, "eventz", ScoreCriteria.DUMMY, new TranslationTextComponent("title.eventz.scoreboard"), ScoreCriteria.RenderType.INTEGER);
 
-        if(event.gates.isEmpty()) {
+        if (event.gates.isEmpty()) {
             stop("No events found to activate");
         } else {
-            if(event.type == Event.Type.INDIVIDUAL) {
+            if (event.type == Event.Type.INDIVIDUAL) {
                 for (ServerPlayerEntity player : playerList.getPlayers()) {
                     contestantList.add(new PlayerContestant(player));
                 }
-            }
-            else if(event.type == Event.Type.TEAM) {
-                for(ServerPlayerEntity player : playerList.getPlayers()) {
+            } else if (event.type == Event.Type.TEAM) {
+                for (ServerPlayerEntity player : playerList.getPlayers()) {
                     Team team = Teams.getPlayersTeam(Teams.jsonFile, player.getGameProfile().getName());
-                    if(contestantList.stream().noneMatch(c -> ((TeamContestant) c).team.equals(team)))
+                    if (contestantList.stream().noneMatch(c -> ((TeamContestant) c).team.equals(team)))
                         contestantList.add(new TeamContestant(team, Collections.singletonList(player)));
                     else {
                         contestantList.forEach(c -> {
-                            if(c instanceof TeamContestant && ((TeamContestant) c).team.equals(team)) {
+                            if (c instanceof TeamContestant && ((TeamContestant) c).team.equals(team)) {
                                 ((TeamContestant) c).players.add(player);
                             }
                         });
                     }
                 }
-            }
-            else {
+            } else {
                 contestantList.add(new ServerContestant());
             }
             EventGate firstGate = event.gates.get(0);
@@ -107,11 +104,11 @@ public class ActiveEvent {
     }
 
     public void tick() {
-        if(System.currentTimeMillis() >= startTime + (event.duration * 60000)) {
+        if (System.currentTimeMillis() >= startTime + (event.duration * 60000)) {
             ServerEvents.sendGlobalMsg(new TranslationTextComponent("message.eventz.eventexpired"));
             stop("Event expired with no winners");
         }
-        if(checkTimedCondition && ServerEvents.tick % 20 == 3) {
+        if (checkTimedCondition && ServerEvents.tick % 20 == 3) {
             contestantList.forEach(c -> c.conditions.forEach((key, value) -> {
                 if (!value.getRight() && !value.getLeft().ended && value.getLeft().endTime != 0 && value.getLeft().endTime <= System.currentTimeMillis()) {
                     try {
@@ -123,7 +120,7 @@ public class ActiveEvent {
                 }
             }));
         }
-        if(ServerEvents.tick % 20 == 5) updateGatesAndCheckWinners();
+        if (ServerEvents.tick % 20 == 5) updateGatesAndCheckWinners();
     }
 
     public void trigger(EventContestant triggeredContestant, String triggerName, Object... params) {
@@ -148,14 +145,14 @@ public class ActiveEvent {
             return;
         }
         condition.contestantData.put(triggeredContestant, returnValue);
-        if(returnValue != null) {
+        if (returnValue != null) {
             checkTimedCondition = true;
-            if (returnValue.getMember("meta_data") instanceof JSObject) {
-                JSObject metaData = (JSObject) returnValue.getMember("meta_data");
+            if (returnValue.getMember("metaData") instanceof JSObject) {
+                JSObject metaData = (JSObject) returnValue.getMember("metaData");
 
-                if (metaData.hasMember("broadcast_message") && metaData.getMember("broadcast_message") instanceof String) {
-                    ServerEvents.sendGlobalMsg(new StringTextComponent((String) metaData.getMember("broadcast_message")));
-                    metaData.removeMember("broadcast_message");
+                if (metaData.hasMember("broadcastMessage") && metaData.getMember("broadcastMessage") instanceof String) {
+                    ServerEvents.sendGlobalMsg(new StringTextComponent((String) metaData.getMember("broadcastMessage")));
+                    metaData.removeMember("broadcastMessage");
                 }
 
                 if (metaData.hasMember("completed") && metaData.getMember("completed").equals(true)) {
@@ -172,8 +169,8 @@ public class ActiveEvent {
                 }
 
             }
-            if (returnValue.hasMember("global_data") && returnValue.getMember("global_data") instanceof JSObject) {
-                JSObject globalData = this.event.globalData = (JSObject) returnValue.getMember("global_data");
+            if (returnValue.hasMember("globalData") && returnValue.getMember("globalData") instanceof JSObject) {
+                JSObject globalData = this.event.globalData = (JSObject) returnValue.getMember("globalData");
 
                 Scoreboard scoreboard = Eventz.getServer().getScoreboard();
                 if (globalData.hasMember("scoreboard")) {
@@ -200,7 +197,7 @@ public class ActiveEvent {
         if (contestant.gateNumber == event.gates.size()) {
             finishEvent(contestant);
         } else {
-            EventGate newGate =  event.gates.get(gateNumber + 1);
+            EventGate newGate = event.gates.get(gateNumber + 1);
             contestant.onStartGate(newGate);
             newGate.enable(contestant.getPlayers());
         }
@@ -209,10 +206,10 @@ public class ActiveEvent {
 
     public void updateGatesAndCheckWinners() {
         //Update gates
-        for(int i = 0; i < event.gates.size(); i++) {
-            if(event.gates.get(i).globalCompleted) {
-                for(EventContestant contestant: contestantList) {
-                    if(contestant.gateNumber == i) {
+        for (int i = 0; i < event.gates.size(); i++) {
+            if (event.gates.get(i).globalCompleted) {
+                for (EventContestant contestant : contestantList) {
+                    if (contestant.gateNumber == i) {
                         contestant.iterate();
                         //Check to make sure this is not the last gate before using onStartGate()
                         if (contestant.gateNumber < event.gates.size()) {
@@ -227,18 +224,18 @@ public class ActiveEvent {
 
         // Check winners
         List<EventContestant> winnerList = new ArrayList<>();
-        for(EventContestant contestant: contestantList) {
-            if(contestant.gateNumber == event.gates.size()) {
+        for (EventContestant contestant : contestantList) {
+            if (contestant.gateNumber == event.gates.size()) {
                 winnerList.add(contestant);
             }
         }
-        if(winnerList.size() > 0)
+        if (winnerList.size() > 0)
             finishEvent(winnerList.toArray(new EventContestant[0]));
     }
 
     public void updateGatesIndividual(EventContestant contestant, int gateNumber) {
-        for(int i = gateNumber; i < event.gates.size(); i++) {
-            if(event.gates.get(i).globalCompleted) {
+        for (int i = gateNumber; i < event.gates.size(); i++) {
+            if (event.gates.get(i).globalCompleted) {
                 contestant.iterate();
                 //Check to make sure this is not the last gate before using onStartGate()
                 if (contestant.gateNumber < event.gates.size()) {
@@ -255,16 +252,16 @@ public class ActiveEvent {
 
     public void finishEvent(EventContestant... contestants) {
         StringBuilder winMessage = new StringBuilder(); //Used to append names of winners to message
-        for(EventContestant contestant: contestants) {
-            if(contestant.getClass() == PlayerContestant.class) {
+        for (EventContestant contestant : contestants) {
+            if (contestant.getClass() == PlayerContestant.class) {
                 ServerPlayerEntity player = ((PlayerContestant) contestant).player;
-                if(player != null) {
+                if (player != null) {
                     String playerName = player.getGameProfile().getName();
                     Ledger.addBalance(Ledger.jsonFile, playerName, event.monetaReward);
                     player.inventory.placeItemBackInInventory(player.getEntityWorld(), event.itemReward);
                     winMessage.append(playerName).append(", ");
                 }
-            } else if(contestant.getClass() == TeamContestant.class) {
+            } else if (contestant.getClass() == TeamContestant.class) {
                 Team team = ((TeamContestant) contestant).team;
                 team.balance += event.monetaReward;
                 Teams.updateTeam(Teams.jsonFile, team);
@@ -272,9 +269,9 @@ public class ActiveEvent {
                 randomPlayer.inventory.placeItemBackInInventory(randomPlayer.getEntityWorld(), event.itemReward);
 
                 team.members.forEach(s -> winMessage.append(s).append(", "));
-            } else if(contestant.getClass() == ServerContestant.class) {
-                for(ServerPlayerEntity player: contestant.getPlayers()) {
-                    if(player != null) {
+            } else if (contestant.getClass() == ServerContestant.class) {
+                for (ServerPlayerEntity player : contestant.getPlayers()) {
+                    if (player != null) {
                         String playerName = player.getGameProfile().getName();
                         Ledger.addBalance(Ledger.jsonFile, playerName, event.monetaReward);
                         player.inventory.placeItemBackInInventory(player.getEntityWorld(), event.itemReward);
@@ -287,7 +284,7 @@ public class ActiveEvent {
             }
         }
         //Remove the last ", "
-        if(winMessage.length() > 0) {
+        if (winMessage.length() > 0) {
             winMessage.delete(winMessage.length() - 2, winMessage.length() - 1);
         }
 
@@ -301,18 +298,18 @@ public class ActiveEvent {
 
     @Nullable
     public EventContestant getContestant(ServerPlayerEntity player) {
-        switch(event.type) {
+        switch (event.type) {
             case TEAM: {
-                for(EventContestant contestant: contestantList) {
-                    if(contestant.getPlayers().contains(player))
+                for (EventContestant contestant : contestantList) {
+                    if (contestant.getPlayers().contains(player))
                         return contestant;
                 }
                 // Search for player's team and add them to it
                 Team team = Teams.getPlayersTeam(Teams.jsonFile, player.getGameProfile().getName());
-                if(!team.isNull()) {
-                    for(EventContestant contestant: contestantList) {
+                if (!team.isNull()) {
+                    for (EventContestant contestant : contestantList) {
                         TeamContestant teamContestant = (TeamContestant) contestant;
-                        if(teamContestant.team.members.contains(player.getGameProfile().getName())) {
+                        if (teamContestant.team.members.contains(player.getGameProfile().getName())) {
                             teamContestant.players.add(player);
                             return contestant;
                         }
@@ -321,13 +318,14 @@ public class ActiveEvent {
                     addLateEntry(contestant);
                     return contestant;
                 }
-            } break;
+            }
+            break;
             case SERVER: {
                 return contestantList.get(0);
             }
             case INDIVIDUAL: {
-                for(EventContestant contestant: contestantList) {
-                    if(((PlayerContestant) contestant).player.equals(player)) {
+                for (EventContestant contestant : contestantList) {
+                    if (((PlayerContestant) contestant).player.equals(player)) {
                         return contestant;
                     }
                 }

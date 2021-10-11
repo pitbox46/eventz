@@ -4,7 +4,6 @@ import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.Registration;
 import github.pitbox46.eventz.data.Condition;
 import github.pitbox46.eventz.data.contestant.EventContestant;
-import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,14 +28,12 @@ import javax.annotation.Nullable;
 
 public class InterfaceTileEntity extends TileEntity implements ITickableTileEntity {
     protected Energy energyStorage = createEnergy();
-    protected FluidTank fluidTank = createTank();
-    protected ItemStackHandler itemHandler = (ItemStackHandler) createHandler();
-
     protected LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
-    protected LazyOptional<IFluidHandler> fluid = LazyOptional.of(() -> fluidTank);
-    protected LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
-
     protected EventContestant contestant;
+    protected FluidTank fluidTank = createTank();
+    protected LazyOptional<IFluidHandler> fluid = LazyOptional.of(() -> fluidTank);
+    protected ItemStackHandler itemHandler = (ItemStackHandler) createHandler();
+    protected LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
 
     public InterfaceTileEntity() {
         super(Registration.INTERFACE_TILE.get());
@@ -44,11 +41,11 @@ public class InterfaceTileEntity extends TileEntity implements ITickableTileEnti
 
     @Override
     public void tick() {
-        if(world.isRemote()) return;
+        if (world.isRemote()) return;
         //TODO Make this happen less
-        if(Eventz.activeEvent != null && contestant != null && contestant.hasUnfilledCondition("interface_block")) {
+        if (Eventz.activeEvent != null && contestant != null && contestant.hasUnfilledCondition("interface_block")) {
             ItemStack item = ItemStack.EMPTY;
-            if(!itemHandler.getStackInSlot(0).isEmpty()) {
+            if (!itemHandler.getStackInSlot(0).isEmpty()) {
                 item = itemHandler.getStackInSlot(0);
                 itemHandler.setStackInSlot(0, ItemStack.EMPTY);
             }
@@ -106,8 +103,8 @@ public class InterfaceTileEntity extends TileEntity implements ITickableTileEnti
                 markDirty();
             }
         }.setValidator(fluidStack -> {
-            if(contestant == null) return false;
-            if(contestant.conditions.containsKey("interface_block")) {
+            if (contestant == null) return false;
+            if (contestant.conditions.containsKey("interface_block")) {
                 Pair<Condition, Boolean> entry = contestant.conditions.get("interface_block");
                 Condition condition = entry.getLeft();
                 if (!entry.getRight() && condition.startObject != null && condition.startObject.hasMember("fluid_input")) {
@@ -128,8 +125,8 @@ public class InterfaceTileEntity extends TileEntity implements ITickableTileEnti
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                if(contestant == null) return false;
-                if(contestant.conditions.containsKey("interface_block")) {
+                if (contestant == null) return false;
+                if (contestant.conditions.containsKey("interface_block")) {
                     Pair<Condition, Boolean> entry = contestant.conditions.get("interface_block");
                     Condition condition = entry.getKey();
                     if (!entry.getRight() && condition.startObject != null && condition.startObject.hasMember("item_input")) {

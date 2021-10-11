@@ -23,7 +23,7 @@ public class PacketHandler {
         registerPacket(SStopBoundary.class, pb -> new SStopBoundary().readPacketData(pb));
     }
 
-    public static <T extends IPacket> void registerPacket(Class<T> packetClass, Function<PacketBuffer,T> decoder) {
+    public static <T extends IPacket> void registerPacket(Class<T> packetClass, Function<PacketBuffer, T> decoder) {
         CHANNEL.registerMessage(
                 ID++,
                 packetClass,

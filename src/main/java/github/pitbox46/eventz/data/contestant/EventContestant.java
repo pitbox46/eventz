@@ -3,15 +3,11 @@ package github.pitbox46.eventz.data.contestant;
 import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.data.Condition;
 import github.pitbox46.eventz.data.EventGate;
-import it.unimi.dsi.fastutil.objects.AbstractReference2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +43,7 @@ public abstract class EventContestant {
     public void iterate() {
         gateNumber++;
         conditions.clear();
-        if(Eventz.activeEvent.event.gates.size() > gateNumber) {
+        if (Eventz.activeEvent.event.gates.size() > gateNumber) {
             Eventz.activeEvent.event.gates.get(gateNumber).forEach((trigger, condition) -> conditions.put(trigger, new MutablePair<>(condition, false)));
         }
     }

@@ -2,8 +2,6 @@ package github.pitbox46.eventz.data.contestant;
 
 import github.pitbox46.eventz.data.EventGate;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.Collections;
 import java.util.List;

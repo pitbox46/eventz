@@ -14,9 +14,9 @@ public class ScoreboardData {
 
     public static ScoreboardData readFromJSObject(JSObject scoreboardData) {
         Map<String, Integer> scores = new HashMap<>();
-        for(String key: scoreboardData.keySet()) {
+        for (String key : scoreboardData.keySet()) {
             Object value = scoreboardData.getMember(key);
-            if(value instanceof Number)
+            if (value instanceof Number)
                 scores.put(key, ((Number) scoreboardData.getMember(key)).intValue());
         }
         return new ScoreboardData(scores);

@@ -4,9 +4,6 @@ import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.EventGate;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 

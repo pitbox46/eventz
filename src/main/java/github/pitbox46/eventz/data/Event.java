@@ -1,7 +1,6 @@
 package github.pitbox46.eventz.data;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -35,7 +34,6 @@ public class Event {
     public final Type type;
     public final List<EventGate> gates;
 
-    public final JSObject defaultObject;
     public JSObject globalData;
 
     public Event(String name, String title, String description, String startMethod, int winners, long duration, long monetaReward, ItemStack itemReward, Type type, List<EventGate> gates) {
@@ -50,31 +48,7 @@ public class Event {
         this.type = type;
         this.gates = gates;
 
-        defaultObject = Eventz.getDefaultObject("getDefaultEventObject");
-        globalData = (JSObject) defaultObject.getMember("global_data");
-    }
-
-    public Event clone() {
-        return new Event(name, title, description, startMethod, winners, duration, monetaReward, itemReward, type, gates.stream().map(EventGate::clone).collect(Collectors.toList()));
-    }
-
-    public void startScript() throws EventzScriptException {
-        if(!startMethod.isEmpty()) {
-            String[] scriptFunctionPair = startMethod.split("#");
-            if(scriptFunctionPair.length != 2)
-                throw new RuntimeException(String.format("Start function for event %s is not in the form \"scriptName.js#functionName\"", name));
-            CompiledScript script = EventRegistration.SCRIPTS.get(scriptFunctionPair[0]);
-            try {
-                script.eval();
-                Object returnValue = ((Invocable) script.getEngine()).invokeFunction(scriptFunctionPair[1]);
-                if (returnValue instanceof JSObject) {
-                    JSObject startObject = (JSObject) returnValue;
-                    globalData.setMember("start_data", startObject);
-                }
-            } catch (ScriptException | NoSuchMethodException e) {
-                throw new EventzScriptException("Some error occurred with starting the condition ", e);
-            }
-        }
+        globalData = Eventz.getDefaultObject("getDefaultEventObject");
     }
 
     public static Event readEvent(String name, JsonObject jsonObject) {
@@ -88,11 +62,11 @@ public class Event {
             String itemRewardString = jsonObject.get("item_reward").getAsString();
             Type type = Type.valueOf(jsonObject.get("type").getAsString());
             ItemStack itemReward = ItemStack.EMPTY;
-            if(itemRewardString != null && !itemRewardString.isEmpty())
+            if (itemRewardString != null && !itemRewardString.isEmpty())
                 itemReward = ItemStack.read(new JsonToNBT(new StringReader(jsonObject.get("item_reward").getAsString())).readStruct());
             JsonArray jsonArray = jsonObject.get("gates").getAsJsonArray();
             ArrayList<EventGate> gates = new ArrayList<>();
-            for(int i = 0; i < jsonArray.size(); i++) {
+            for (int i = 0; i < jsonArray.size(); i++) {
                 gates.add(EventGate.readEventGate(jsonArray.get(i).getAsJsonObject(), i));
             }
             return new Event(name, title, description, startMethod, winners, duration, monetaReward, itemReward, type, gates);
@@ -100,6 +74,29 @@ public class Event {
             LOGGER.error("There was an issue processing an event with jsonObject:\n" + jsonObject, e);
         }
         return null;
+    }
+
+    public Event clone() {
+        return new Event(name, title, description, startMethod, winners, duration, monetaReward, itemReward, type, gates.stream().map(EventGate::clone).collect(Collectors.toList()));
+    }
+
+    public void startScript() throws EventzScriptException {
+        if (!startMethod.isEmpty()) {
+            String[] scriptFunctionPair = startMethod.split("#");
+            if (scriptFunctionPair.length != 2)
+                throw new RuntimeException(String.format("Start function for event %s is not in the form \"scriptName.js#functionName\"", name));
+            CompiledScript script = EventRegistration.SCRIPTS.get(scriptFunctionPair[0]);
+            try {
+                script.eval();
+                Object returnValue = ((Invocable) script.getEngine()).invokeFunction(scriptFunctionPair[1]);
+                if (returnValue instanceof JSObject) {
+                    JSObject startObject = (JSObject) returnValue;
+                    globalData.setMember("startData", startObject);
+                }
+            } catch (ScriptException | NoSuchMethodException e) {
+                throw new EventzScriptException("Some error occurred with starting the condition ", e);
+            }
+        }
     }
 
     public enum Type {

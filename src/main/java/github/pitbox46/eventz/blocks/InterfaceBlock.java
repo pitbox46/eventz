@@ -33,8 +33,8 @@ public class InterfaceBlock extends Block {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if(!worldIn.isRemote()) {
-            if(!(worldIn.getTileEntity(pos) instanceof InterfaceTileEntity))
+        if (!worldIn.isRemote()) {
+            if (!(worldIn.getTileEntity(pos) instanceof InterfaceTileEntity))
                 return ActionResultType.FAIL;
             InterfaceTileEntity te = (InterfaceTileEntity) worldIn.getTileEntity(pos);
             assert te != null;

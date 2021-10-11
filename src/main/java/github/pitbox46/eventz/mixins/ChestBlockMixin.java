@@ -21,7 +21,7 @@ public class ChestBlockMixin {
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/player/PlayerEntity.openContainer(Lnet/minecraft/inventory/container/INamedContainerProvider;)Ljava/util/OptionalInt;"), method = "onBlockActivated")
     public void onOnBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit, CallbackInfoReturnable<ActionResultType> cir) {
         EventContestant contestant;
-        if(Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant((ServerPlayerEntity) player)) != null && contestant.hasUnfilledCondition("locked_loot") && contestant.conditions.get("locked_loot").getLeft().genericPos.equals(pos)) {
+        if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant((ServerPlayerEntity) player)) != null && contestant.hasUnfilledCondition("locked_loot") && contestant.conditions.get("locked_loot").getLeft().genericPos.equals(pos)) {
             //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, int posX, int posY, int posZ
             Eventz.activeEvent.trigger(contestant, "locked_loot", (player).getUniqueID().toString(), (player).getGameProfile().getName(), pos.getX(), pos.getY(), pos.getZ());
         }

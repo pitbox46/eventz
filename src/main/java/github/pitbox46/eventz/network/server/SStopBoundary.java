@@ -6,7 +6,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class SStopBoundary implements IPacket {
-    public SStopBoundary() {}
+    public SStopBoundary() {
+    }
 
     @Override
     public SStopBoundary readPacketData(PacketBuffer buf) {
@@ -14,7 +15,8 @@ public class SStopBoundary implements IPacket {
     }
 
     @Override
-    public void writePacketData(PacketBuffer buf) {}
+    public void writePacketData(PacketBuffer buf) {
+    }
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {

@@ -3,8 +3,6 @@ package github.pitbox46.eventz.data.contestant;
 import github.pitbox46.eventz.data.EventGate;
 import github.pitbox46.monetamoney.data.Team;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,7 @@ public class TeamContestant extends EventContestant {
 
     @Override
     public void onStartGate(EventGate gate) {
-        for(ServerPlayerEntity player : players) {
+        for (ServerPlayerEntity player : players) {
             player.sendStatusMessage(formatMessage(gate.description), false);
         }
     }

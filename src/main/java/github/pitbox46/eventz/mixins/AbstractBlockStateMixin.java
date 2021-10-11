@@ -18,11 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class AbstractBlockStateMixin {
     @Inject(at = @At(value = "HEAD"), method = "onBlockActivated")
     public void onOnBlockActivated(World worldIn, PlayerEntity player, Hand handIn, BlockRayTraceResult resultIn, CallbackInfoReturnable<ActionResultType> cir) {
-        if(worldIn.isRemote()) return;
+        if (worldIn.isRemote()) return;
         EventContestant contestant;
-        if(Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant((ServerPlayerEntity) player)) != null && contestant.hasUnfilledCondition("block_activated")) {
+        if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant((ServerPlayerEntity) player)) != null && contestant.hasUnfilledCondition("block_activated")) {
             //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String blockName, int posX, int posY, int posZ
-            Eventz.activeEvent.trigger(contestant, "block_activated", player.getUniqueID().toString(), player.getGameProfile().getName(), ((AbstractBlock.AbstractBlockState)(Object) this).getBlock().getRegistryName().toString(), resultIn.getPos().getX(), resultIn.getPos().getY(), resultIn.getPos().getZ());
+            Eventz.activeEvent.trigger(contestant, "block_activated", player.getUniqueID().toString(), player.getGameProfile().getName(), ((AbstractBlock.AbstractBlockState) (Object) this).getBlock().getRegistryName().toString(), resultIn.getPos().getX(), resultIn.getPos().getY(), resultIn.getPos().getZ());
         }
     }
 }

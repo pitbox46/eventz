@@ -19,7 +19,6 @@ import javax.script.Invocable;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.Random;
-import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("eventz")
@@ -28,16 +27,16 @@ public class Eventz {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final NashornScriptEngine NASHORN = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
     private static final CompiledScript DEFAULT_OBJECT_SCRIPT;
-    private static MinecraftServer server;
     public static ActiveEvent activeEvent;
     public static CommonProxy PROXY;
+    private static MinecraftServer server;
 
     static {
         try {
             DEFAULT_OBJECT_SCRIPT = Eventz.NASHORN.compile(
-                    "function getDefaultConditionObject() {return {\"meta_data\":{},\"start_data\":{}};}"
-                    + "function getDefaultEventObject() {return {\"start_data\":{},\"global_data\":{}};}"
-                    + "function createEmptyObject() {return {};}");
+                    "function getDefaultConditionObject() {return {\"metaData\":{},\"startData\":{}};}"
+                            + "function getDefaultEventObject() {return {\"startData\":{}};}"
+                            + "function createEmptyObject() {return {};}");
         } catch (ScriptException e) {
             throw new RuntimeException();
         }
@@ -66,11 +65,11 @@ public class Eventz {
         return getDefaultObject("createEmptyObject");
     }
 
-    public static void setServer(MinecraftServer server) {
-        Eventz.server = server;
-    }
-
     public static MinecraftServer getServer() {
         return server;
+    }
+
+    public static void setServer(MinecraftServer server) {
+        Eventz.server = server;
     }
 }

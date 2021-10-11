@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerEntityMixin {
     @Inject(at = @At(value = "HEAD"), method = "onFoodEaten")
     private void onFoodEaten(World world, ItemStack food, CallbackInfoReturnable<ItemStack> cir) {
-        if(world.isRemote()) return;
+        if (world.isRemote()) return;
         EventContestant contestant;
-        if(Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant((ServerPlayerEntity) (Object) this)) != null && contestant.hasUnfilledCondition("player_eat_food")) {
+        if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant((ServerPlayerEntity) (Object) this)) != null && contestant.hasUnfilledCondition("player_eat_food")) {
             //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String food, int hungerRestore, float saturation
             Eventz.activeEvent.trigger(contestant, "player_eat_food", ((ServerPlayerEntity) (Object) this).getUniqueID().toString(), ((ServerPlayerEntity) (Object) this).getGameProfile().getName(), food.getItem().getRegistryName().toString(), food.getItem().getFood().getHealing(), food.getItem().getFood().getSaturation());
         }

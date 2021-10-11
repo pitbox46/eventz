@@ -3,8 +3,6 @@ package github.pitbox46.eventz.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.pitbox46.eventz.Eventz;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -15,7 +13,7 @@ public class CommandForceEventStop {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Command<CommandSource> CMD = context -> {
-        if(Eventz.activeEvent != null)
+        if (Eventz.activeEvent != null)
             Eventz.activeEvent.stop("Event stopped forcefully via command");
         return 0;
     };

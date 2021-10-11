@@ -2,9 +2,6 @@ package github.pitbox46.eventz.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import github.pitbox46.monetamoney.commands.CommandAddShop;
-import github.pitbox46.monetamoney.commands.CommandLeaveTeam;
-import github.pitbox46.monetamoney.commands.CommandListShop;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 

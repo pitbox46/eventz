@@ -6,20 +6,14 @@ import com.google.gson.JsonObject;
 import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.EventzScriptException;
 import github.pitbox46.eventz.EventzScriptLoadingException;
-import github.pitbox46.eventz.data.contestant.EventContestant;
 import github.pitbox46.eventz.network.PacketHandler;
 import github.pitbox46.eventz.network.server.SSendBoundaryInfo;
 import github.pitbox46.eventz.network.server.SStopBoundary;
-import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static sun.audio.AudioPlayer.player;
 
 public class EventGate extends HashMap<String, Condition> {
     public final String description;
@@ -39,16 +33,34 @@ public class EventGate extends HashMap<String, Condition> {
         this.index = index;
     }
 
+    public static EventGate readEventGate(JsonObject jsonObject, int index) throws EventzScriptLoadingException {
+        EventGate eventGate;
+        try {
+            String description = jsonObject.get("description").getAsString();
+            Operator operator = Operator.valueOf(jsonObject.get("operator").getAsString());
+            boolean global = jsonObject.get("global").getAsBoolean();
+            JsonArray array = jsonObject.get("conditions").getAsJsonArray();
+            eventGate = new EventGate(description, operator, global, index);
+            for (JsonElement element : array) {
+                Condition condition = Condition.readCondition((JsonObject) element, eventGate);
+                eventGate.put(condition.trigger, condition);
+            }
+        } catch (NullPointerException | UnsupportedOperationException e) {
+            throw new EventzScriptLoadingException(e.getMessage(), e);
+        }
+        return eventGate;
+    }
+
     public EventGate clone() {
         EventGate clone = new EventGate(description, operator, global, index);
-        for(Entry<String, Condition> entry: this.entrySet()) {
+        for (Entry<String, Condition> entry : this.entrySet()) {
             clone.put(entry.getKey(), entry.getValue().clone(clone));
         }
         return clone;
     }
 
     public void enable(List<ServerPlayerEntity> playerList) {
-        if(!enabled) {
+        if (!enabled) {
             try {
                 for (Condition condition : this.values()) {
                     condition.startScript();
@@ -61,16 +73,16 @@ public class EventGate extends HashMap<String, Condition> {
             enabled = true;
         }
         this.values().forEach(c -> {
-            if(!Double.isNaN(c.boundaryMinX)) {
+            if (!Double.isNaN(c.boundaryMinX)) {
                 playerList.forEach(player -> PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SSendBoundaryInfo(c.boundaryMinX, c.boundaryMaxX, c.boundaryMinZ, c.boundaryMaxZ)));
             }
         });
     }
 
     public void onComplete(List<ServerPlayerEntity> playerList) {
-        if(global) {
+        if (global) {
             Eventz.getServer().getPlayerList().getPlayers().forEach(player -> this.forEach((string, condition) -> {
-                if(!Double.isNaN(condition.boundaryMinX))
+                if (!Double.isNaN(condition.boundaryMinX))
                     PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SStopBoundary());
             }));
             onGlobalComplete();
@@ -84,24 +96,6 @@ public class EventGate extends HashMap<String, Condition> {
 
     public void onGlobalComplete() {
         globalCompleted = true;
-    }
-
-    public static EventGate readEventGate(JsonObject jsonObject, int index) throws EventzScriptLoadingException {
-        EventGate eventGate;
-        try {
-            String description = jsonObject.get("description").getAsString();
-            Operator operator = Operator.valueOf(jsonObject.get("operator").getAsString());
-            boolean global = jsonObject.get("global").getAsBoolean();
-            JsonArray array = jsonObject.get("conditions").getAsJsonArray();
-            eventGate = new EventGate(description, operator, global, index);
-            for(JsonElement element: array) {
-                Condition condition = Condition.readCondition((JsonObject) element, eventGate);
-                eventGate.put(condition.trigger, condition);
-            }
-        } catch (NullPointerException | UnsupportedOperationException e) {
-            throw new EventzScriptLoadingException(e.getMessage(), e);
-        }
-        return eventGate;
     }
 
     public enum Operator {

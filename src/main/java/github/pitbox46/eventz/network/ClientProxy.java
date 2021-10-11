@@ -2,15 +2,6 @@ package github.pitbox46.eventz.network;
 
 import github.pitbox46.eventz.network.server.SSendBoundaryInfo;
 import github.pitbox46.eventz.network.server.SStopBoundary;
-import github.pitbox46.monetamoney.data.Auctioned;
-import github.pitbox46.monetamoney.network.server.*;
-import github.pitbox46.monetamoney.screen.AnchorScreen;
-import github.pitbox46.monetamoney.screen.IStatusable;
-import github.pitbox46.monetamoney.screen.vault.BalancePage;
-import github.pitbox46.monetamoney.screen.vault.ChunksPage;
-import github.pitbox46.monetamoney.screen.vault.MainPage;
-import github.pitbox46.monetamoney.screen.vault.TeamsPage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.border.BorderStatus;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,6 +13,10 @@ public class ClientProxy extends CommonProxy {
     public ClientProxy() {
         super();
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public static WorldBorder getEventBoundary() {
+        return eventBoundary;
     }
 
     @Override
@@ -61,9 +56,5 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void handleSStopBoundary(NetworkEvent.Context ctx, SStopBoundary packet) {
         eventBoundary = null;
-    }
-
-    public static WorldBorder getEventBoundary() {
-        return eventBoundary;
     }
 }

@@ -5,8 +5,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.ServerEvents;
@@ -20,15 +18,15 @@ public class CommandForceEventStart {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Command<CommandSource> CMD_RANDOM = context -> {
-        if(Eventz.activeEvent == null)
+        if (Eventz.activeEvent == null)
             ServerEvents.startRandomEvent();
         return 0;
     };
 
     private static final Command<CommandSource> CMD_KEY = context -> {
-        if(Eventz.activeEvent == null) {
+        if (Eventz.activeEvent == null) {
             String key = StringArgumentType.getString(context, "eventKey");
-            if(EventRegistration.EVENTS.containsKey(key)) {
+            if (EventRegistration.EVENTS.containsKey(key)) {
                 ServerEvents.startSpecificEvent(key);
             } else {
                 throw new SimpleCommandExceptionType(new LiteralMessage("Could not find key: " + key)).create();

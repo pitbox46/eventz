@@ -11,7 +11,8 @@ public class SSendBoundaryInfo implements IPacket {
     public double minZ;
     public double maxZ;
 
-    public SSendBoundaryInfo() {}
+    public SSendBoundaryInfo() {
+    }
 
     public SSendBoundaryInfo(double minX, double maxX, double minZ, double maxZ) {
         this.minX = minX;

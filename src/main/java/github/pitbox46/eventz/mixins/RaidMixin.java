@@ -19,12 +19,13 @@ import java.util.UUID;
 
 @Mixin(Raid.class)
 public class RaidMixin {
-    @Shadow private BlockPos center;
+    @Shadow
+    private BlockPos center;
 
     @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/player/ServerPlayerEntity.addStat(Lnet/minecraft/util/ResourceLocation;)V"), method = "tick", locals = LocalCapture.CAPTURE_FAILSOFT)
     public void onPlayerWin(CallbackInfo ci, boolean flag, int i, boolean flag3, int k, Iterator<?> var5, UUID uuid, Entity entity, LivingEntity livingentity, ServerPlayerEntity serverplayerentity) {
         EventContestant contestant;
-        if(Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(serverplayerentity)) != null && contestant.hasUnfilledCondition("raid")) {
+        if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(serverplayerentity)) != null && contestant.hasUnfilledCondition("raid")) {
             //JSObject previousValues, JSObject globalData, String contestantName, int centerX, int centerY, int centerZ
             Eventz.activeEvent.trigger(contestant, "raid", center.getX(), center.getY(), center.getZ());
         }
