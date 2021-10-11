@@ -61,6 +61,13 @@ public class Eventz {
         return null;
     }
 
+    public static Object getOrCreateProperty(JSObject object, String property) {
+        if (!object.hasMember(property)) {
+            object.setMember(property, createEmptyObject());
+        }
+        return object.getMember(property);
+    }
+
     public static JSObject createEmptyObject() {
         return getDefaultObject("createEmptyObject");
     }

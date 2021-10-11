@@ -9,6 +9,7 @@ import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.Undefined;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -201,9 +202,13 @@ public class Condition {
 
     public void timesUp() throws EventzScriptException {
         boolean flag = true;
-        JSObject globalData = (JSObject) ((JSObject) Eventz.activeEvent.event.globalData.getMember(String.valueOf(eventGate.index))).getMember(trigger);
-        ((ScriptObjectMirror) globalData).put("timeUp", true);
+        JSObject globalData = Eventz.activeEvent.event.globalData;
+
+        globalData.setMember(eventGate.index + "_" + trigger + "_timeUp", true);
         JSObject returnValue = trigger(Arrays.asList(null, globalData));
+        if (returnValue == null) {
+            throw new EventzScriptException(String.format("On timeUp, condition %s returned nothing. Expected JSObject", eventGate.index + "_" + trigger));
+        }
         if (returnValue.getMember("globalData") instanceof JSObject) {
             JSObject globalDataFinal = (JSObject) returnValue.getMember("globalData");
             //Todo This

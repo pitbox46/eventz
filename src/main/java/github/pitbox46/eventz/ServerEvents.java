@@ -157,7 +157,7 @@ public class ServerEvents {
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("kill_entity")) {
                 //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType, String entityName, int entityID
-                Eventz.activeEvent.trigger(contestant, "kill_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getEntityString(), event.getEntityLiving().getName().getString(), event.getEntityLiving().getEntityId());
+                Eventz.activeEvent.trigger(contestant, "kill_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getType().getRegistryName(), event.getEntityLiving().getName().getString(), event.getEntityLiving().getEntityId());
             }
         }
     }
@@ -169,7 +169,7 @@ public class ServerEvents {
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("damage_entity")) {
                 //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType, String entityName, int entityID, float amount, boolean willDie
-                Eventz.activeEvent.trigger(contestant, "damage_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getEntityString(), event.getEntityLiving().getName().getString(), event.getEntityLiving().getEntityId(), event.getAmount(), event.getEntityLiving().getHealth() <= event.getAmount());
+                Eventz.activeEvent.trigger(contestant, "damage_entity", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getEntityLiving().getType().getRegistryName(), event.getEntityLiving().getName().getString(), event.getEntityLiving().getEntityId(), event.getAmount(), event.getEntityLiving().getHealth() <= event.getAmount());
             }
         }
     }
@@ -181,7 +181,7 @@ public class ServerEvents {
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("tame_mob")) {
                 //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType
-                Eventz.activeEvent.trigger(contestant, "tame_mob", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getAnimal().getEntityString());
+                Eventz.activeEvent.trigger(contestant, "tame_mob", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getAnimal().getType().getRegistryName());
             }
         }
     }
@@ -193,7 +193,7 @@ public class ServerEvents {
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("breed_mob")) {
                 //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType
-                Eventz.activeEvent.trigger(contestant, "breed_mob", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getParentA().getEntityString());
+                Eventz.activeEvent.trigger(contestant, "breed_mob", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getParentA().getType().getRegistryName());
             }
         }
     }
@@ -205,7 +205,7 @@ public class ServerEvents {
             EventContestant contestant;
             if (Eventz.activeEvent != null && (contestant = Eventz.activeEvent.getContestant(player)) != null && contestant.hasUnfilledCondition("milk_mob")) {
                 //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, String entityType
-                Eventz.activeEvent.trigger(contestant, "milk_mob", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getTarget().getEntityString());
+                Eventz.activeEvent.trigger(contestant, "milk_mob", (player).getUniqueID().toString(), (player).getGameProfile().getName(), event.getTarget().getType().getRegistryName());
             }
         }
     }

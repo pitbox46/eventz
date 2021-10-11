@@ -1,3 +1,7 @@
+October 11, 2021 pitbox46
+-timeUp works again
+-Fixed bug where if the damaged entity were a player, the entityType would be null
+
 October 10, 2021 pitbox46
 -Refactored code
 -Changed all JavaScript object properties to be camelCase rather than snake_case
