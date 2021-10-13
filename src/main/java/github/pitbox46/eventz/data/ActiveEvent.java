@@ -155,6 +155,11 @@ public class ActiveEvent {
                     metaData.removeMember("broadcastMessage");
                 }
 
+                if (metaData.hasMember("contestantMessage") && metaData.getMember("contestantMessage") instanceof String) {
+                    triggeredContestant.sendMessage(new StringTextComponent((String) metaData.getMember("contestantMessage")));
+                    metaData.removeMember("contestantMessage");
+                }
+
                 if (metaData.hasMember("completed") && metaData.getMember("completed").equals(true)) {
                     triggeredContestant.conditions.get(triggerName).setRight(true);
                     if (gate.operator == EventGate.Operator.OR) {

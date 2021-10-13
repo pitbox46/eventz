@@ -8,21 +8,20 @@ import github.pitbox46.eventz.EventzScriptLoadingException;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import jdk.nashorn.internal.runtime.Undefined;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.*;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.script.CompiledScript;
 import javax.script.Invocable;
@@ -65,8 +64,10 @@ public class Condition {
         }
     }
 
-    private static <C extends IInventory, R extends IRecipe<C>> R recipeFromIngredients(IRecipeType<R> recipeType, JSObject jsObject) {
+    private static <C extends IInventory, R extends IRecipe<C>> Pair<String, R> recipeFromIngredients(IRecipeType<R> recipeType, JSObject jsObject) {
         JSObject potentialIngredients = (JSObject) jsObject.getMember("potentialIngredients");
+
+        String usedIngredient = "NULL";
 
         List<R> recipeList = new ArrayList<>();
         for (R recipe : Eventz.getServer().getRecipeManager().getRecipesForType(recipeType)) {
@@ -76,6 +77,7 @@ public class Condition {
                     int i = 0;
                     while (potentialIngredients.hasSlot(i)) {
                         if (potentialIngredients.getSlot(i).equals(itemStack.getItem().getRegistryName().toString())) {
+                            usedIngredient = (String) potentialIngredients.getSlot(i);
                             flag = true;
                             break;
                             //Todo this could be written cleaner and more efficiently
@@ -88,7 +90,7 @@ public class Condition {
             }
             if (flag) recipeList.add(recipe);
         }
-        return recipeList.get(Eventz.RANDOM.nextInt(recipeList.size()));
+        return new ImmutablePair<>(usedIngredient, recipeList.get(Eventz.RANDOM.nextInt(recipeList.size())));
     }
 
     public Condition clone(EventGate eventGate) {
@@ -116,7 +118,7 @@ public class Condition {
         }
         if (startObject != null) {
             if (startObject.hasMember("timer") && startObject.getMember("timer") instanceof Integer) {
-                endTime = System.currentTimeMillis() + (Integer) startObject.getMember("timer");
+                endTime = ((Number) startObject.getMember("timer")).longValue();
             }
             if (startObject.hasMember("broadcastMessage") && startObject.getMember("broadcastMessage") instanceof String) {
                 ServerEvents.sendGlobalMsg(new StringTextComponent((String) startObject.getMember("broadcastMessage")));
@@ -133,14 +135,15 @@ public class Condition {
                 }
             }
             //Todo make this more moddable
-            if (trigger.equals("randomCraft")) {
-                recipe = recipeFromIngredients(IRecipeType.CRAFTING, startObject);
-                ServerEvents.sendGlobalMsg(new StringTextComponent("Random craft goal: " + recipe.getRecipeOutput()));
-            } else if (trigger.equals("randomSmelt")) {
-                recipe = recipeFromIngredients(IRecipeType.SMELTING, startObject);
-                //Todo make these translation text components
-                ServerEvents.sendGlobalMsg(new StringTextComponent("Random smelt goal: " + recipe.getRecipeOutput()));
-            } else if (trigger.equals("lockedChest")) {
+            if (trigger.equals("random_craft")) {
+                Pair<String, ICraftingRecipe> pair = recipeFromIngredients(IRecipeType.CRAFTING, startObject);
+                recipe = pair.getRight();
+                ServerEvents.sendGlobalMsg(new TranslationTextComponent("message.eventz.random_craft", pair.getLeft()));
+            } else if (trigger.equals("random_smelt")) {
+                Pair<String, FurnaceRecipe> pair = recipeFromIngredients(IRecipeType.SMELTING, startObject);
+                recipe = pair.getRight();
+                ServerEvents.sendGlobalMsg(new TranslationTextComponent("message.eventz.random_smelt", pair.getLeft()));
+            } else if (trigger.equals("locked_chest")) {
                 if (startObject.hasMember("lockedLoot")) {
                     List<ServerWorld> worlds = new ArrayList<>();
                     Eventz.getServer().getWorlds().forEach(worlds::add);

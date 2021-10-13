@@ -1,6 +1,16 @@
+October 12, 2021 pitbox46
+-Added event JS event randomizer option
+
+October 12, 2021 pitbox46
+-Fixed bug where biomes wouldn't turn into proper strings
+-Timer now works based off of end time rather than relative time.
+-Updated localization
+-Random craft/smelt now tells users the ingredient so the users have to guess the recipe
+
 October 11, 2021 pitbox46
 -timeUp works again
 -Fixed bug where if the damaged entity were a player, the entityType would be null
+-Fixed if statements in Condition.startScript()
 
 October 10, 2021 pitbox46
 -Refactored code

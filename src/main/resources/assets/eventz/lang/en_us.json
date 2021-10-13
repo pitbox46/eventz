@@ -1,3 +1,6 @@
 {
-  "message.eventz.eventcomplete": "Winners of the event: %s"
+  "title.eventz.scoreboard": "Eventz Scoreboard!",
+  "message.eventz.eventcomplete": "Winners of the event: %s",
+  "message.eventz.random_craft": "Craft the random recipe crafted from the item: %s",
+  "message.eventz.random_smelt": "Smelt the recipe smelted from the item: %s"
 }

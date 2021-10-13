@@ -37,12 +37,15 @@ import net.minecraftforge.fml.loading.FileUtils;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import static net.minecraftforge.eventbus.api.EventPriority.LOWEST;
 
 public class ServerEvents {
+    public static final List<String> eventHistory = new ArrayList<>();
     public static long tick = 0;
     public static FakePlayer fakePlayer;
     private static long previousEventTime = 0;
@@ -65,16 +68,37 @@ public class ServerEvents {
 
     public static void startRandomEvent() {
         if (!EventRegistration.EVENTS.isEmpty()) {
-            int eventIndex = Eventz.RANDOM.nextInt(EventRegistration.EVENTS.size());
-            String eventKey = EventRegistration.EVENTS.keySet().stream().skip(eventIndex).findFirst().orElseThrow(IndexOutOfBoundsException::new);
-            Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(eventKey));
-            Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
+            if(EventRegistration.randomizer_function.equals("DEFAULT")) {
+                defaultRandomizer();
+            }
+            else {
+                try {
+                    String event = EventRegistration.getRandomizerEvent(eventHistory.toArray(), EventRegistration.EVENTS.keySet().toArray());
+                    if(EventRegistration.EVENTS.containsKey(event)) {
+                        startSpecificEvent(event);
+                    } else {
+                        defaultRandomizer();
+                    }
+                } catch (EventzScriptException e) {
+                    defaultRandomizer();
+                }
+            }
         }
     }
+
+    private static void defaultRandomizer() {
+        int eventIndex = Eventz.RANDOM.nextInt(EventRegistration.EVENTS.size());
+        String eventKey = EventRegistration.EVENTS.keySet().stream().skip(eventIndex).findFirst().orElseThrow(IndexOutOfBoundsException::new);
+        Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(eventKey));
+        Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
+        eventHistory.add(0, eventKey);
+    }
+
 
     public static void startSpecificEvent(String key) {
         Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(key));
         Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
+        eventHistory.add(0, key);
     }
 
     public static void sendGlobalMsg(ITextComponent msg) {
@@ -129,7 +153,7 @@ public class ServerEvents {
                 }
                 if (contestant.hasUnfilledCondition("area_check")) {
                     //JSObject previousValues, JSObject globalData, String contestantName, String uuid, String playerName, double posX, double posY, double posZ, String biome, boolean inVillage
-                    Eventz.activeEvent.trigger(contestant, "area_check", player.getUniqueID().toString(), player.getGameProfile().getName(), player.getPosX(), player.getPosY(), player.getPosZ(), player.getEntityWorld().getBiome(player.getPosition()).toString(), player.getServerWorld().isVillage(player.getPosition()));
+                    Eventz.activeEvent.trigger(contestant, "area_check", player.getUniqueID().toString(), player.getGameProfile().getName(), player.getPosX(), player.getPosY(), player.getPosZ(), player.getServerWorld().getBiome(player.getPosition()).getRegistryName().toString(), player.getServerWorld().isVillage(player.getPosition()));
                 }
                 if (contestant.hasUnfilledCondition("held_item_check")) {
                     ItemStack main = player.getHeldItemMainhand();

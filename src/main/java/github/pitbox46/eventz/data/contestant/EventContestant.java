@@ -30,7 +30,9 @@ public abstract class EventContestant {
 
     abstract public String getName();
 
-    protected ITextComponent formatMessage(String msg) {
+    abstract public void sendMessage(ITextComponent message);
+
+    static protected ITextComponent formatMessage(String msg) {
         return new StringTextComponent(msg).mergeStyle(TextFormatting.GRAY);
     }
 

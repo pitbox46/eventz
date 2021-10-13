@@ -1,8 +1,9 @@
 {
+    "randomizer_function": "StartEvents.js#randomizer",
     "test_event": {
         "title": "Test Event!!!",
         "description": "Test description!",
-        "start_method": "",
+        "start_method": "StartEvents.js#testEventStartMethod",
         "gates": [
             {
                 "description": "First stage of the event",
@@ -11,7 +12,7 @@
                 "conditions": [
                     {
                         "trigger": "tame_mob",
-                        "start_method": "",
+                        "start_method": "StartEvents.js#testBroadcastMsg",
                         "trigger_method": "Events.js#tameFiveWolves"
                     }
                 ]
@@ -19,7 +20,7 @@
         ],
         "type": "INDIVIDUAL",
         "winners": 1,
-        "duration": 1,
+        "duration": 100,
         "moneta_reward": 1000000,
         "item_reward": ""
     },
@@ -34,9 +35,33 @@
                 "global": false,
                 "conditions": [
                     {
-                        "trigger": "eating_contest",
+                        "trigger": "player_eat_food",
                         "start_method": "StartEvents.js#startFoodExample",
                         "trigger_method": "Events.js#foodTimerExample"
+                    }
+                ]
+            }
+        ],
+        "type": "INDIVIDUAL",
+        "winners": 1,
+        "duration": 100,
+        "moneta_reward": 1000000,
+        "item_reward": ""
+    },
+    "koth": {
+        "title": "KOTH",
+        "description": "",
+        "start_method": "",
+        "gates": [
+            {
+                "description": "First stage of the event",
+                "operator": "AND",
+                "global": false,
+                "conditions": [
+                    {
+                        "trigger": "area_check",
+                        "start_method": "StartEvents.js#kothStart",
+                        "trigger_method": "Events.js#koth"
                     }
                 ]
             }

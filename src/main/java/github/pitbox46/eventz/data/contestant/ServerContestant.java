@@ -4,13 +4,19 @@ import github.pitbox46.eventz.Eventz;
 import github.pitbox46.eventz.ServerEvents;
 import github.pitbox46.eventz.data.EventGate;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
 public class ServerContestant extends EventContestant {
     @Override
     public void onStartGate(EventGate gate) {
-        ServerEvents.sendGlobalMsg(formatMessage(gate.description));
+        sendMessage(formatMessage(gate.description));
+    }
+
+    @Override
+    public void sendMessage(ITextComponent message) {
+        ServerEvents.sendGlobalMsg(message);
     }
 
     @Override
