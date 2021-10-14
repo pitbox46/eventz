@@ -160,6 +160,10 @@ public class ActiveEvent {
                     metaData.removeMember("contestantMessage");
                 }
 
+                if (metaData.hasMember("runCommand") && metaData.getMember("runCommand") instanceof String) {
+                    Eventz.getServer().getCommandManager().handleCommand(Eventz.getServer().getCommandSource(), (String) metaData.getMember("runCommand"));
+                }
+
                 if (metaData.hasMember("completed") && metaData.getMember("completed").equals(true)) {
                     triggeredContestant.conditions.get(triggerName).setRight(true);
                     if (gate.operator == EventGate.Operator.OR) {

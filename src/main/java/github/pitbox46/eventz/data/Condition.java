@@ -69,7 +69,7 @@ public class Condition {
 
         String usedIngredient = "NULL";
 
-        List<R> recipeList = new ArrayList<>();
+        List<Pair<String, R>> recipeList = new ArrayList<>();
         for (R recipe : Eventz.getServer().getRecipeManager().getRecipesForType(recipeType)) {
             boolean flag = false;
             for (Ingredient ingredient : recipe.getIngredients()) {
@@ -88,9 +88,9 @@ public class Condition {
                 }
                 if (flag) break;
             }
-            if (flag) recipeList.add(recipe);
+            if (flag) recipeList.add(new ImmutablePair<>(usedIngredient, recipe));
         }
-        return new ImmutablePair<>(usedIngredient, recipeList.get(Eventz.RANDOM.nextInt(recipeList.size())));
+        return recipeList.get(Eventz.RANDOM.nextInt(recipeList.size()));
     }
 
     public Condition clone(EventGate eventGate) {
@@ -122,6 +122,9 @@ public class Condition {
             }
             if (startObject.hasMember("broadcastMessage") && startObject.getMember("broadcastMessage") instanceof String) {
                 ServerEvents.sendGlobalMsg(new StringTextComponent((String) startObject.getMember("broadcastMessage")));
+            }
+            if (startObject.hasMember("runCommand") && startObject.getMember("runCommand") instanceof String) {
+                Eventz.getServer().getCommandManager().handleCommand(Eventz.getServer().getCommandSource(), (String) startObject.getMember("runCommand"));
             }
             if (startObject.hasMember("visibleBoundary") && startObject.getMember("visibleBoundary") instanceof JSObject) {
                 JSObject boundary = (JSObject) startObject.getMember("visibleBoundary");

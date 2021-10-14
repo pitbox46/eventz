@@ -8,15 +8,22 @@ import github.pitbox46.eventz.data.EventRegistration;
 import github.pitbox46.eventz.data.contestant.EventContestant;
 import github.pitbox46.eventz.network.PacketHandler;
 import github.pitbox46.eventz.network.server.SStopBoundary;
+import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.EmptyFluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.FolderName;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -48,6 +55,7 @@ public class ServerEvents {
     public static final List<String> eventHistory = new ArrayList<>();
     public static long tick = 0;
     public static FakePlayer fakePlayer;
+    public static CommandSource commandSource;
     private static long previousEventTime = 0;
     private static int cooldown;
 
@@ -123,7 +131,12 @@ public class ServerEvents {
     public void onServerTick(TickEvent.ServerTickEvent tickEvent) {
         if (tickEvent.phase == TickEvent.Phase.END) {
             if (fakePlayer == null) {
-                fakePlayer = new FakePlayer(Eventz.getServer().getWorlds().iterator().next(), new GameProfile(Util.DUMMY_UUID, "Eventz"));
+                fakePlayer = new FakePlayer(Eventz.getServer().func_241755_D_(), new GameProfile(Util.DUMMY_UUID, "Eventz"));
+            }
+            if (commandSource == null) {
+                MinecraftServer server = Eventz.getServer();
+                ServerWorld serverWorld = server.func_241755_D_();
+                commandSource = new CommandSource(server, serverWorld == null ? Vector3d.ZERO : Vector3d.copy(serverWorld.getSpawnPoint()), Vector2f.ZERO, serverWorld, 4, "Eventz", new StringTextComponent("Eventz"), server, null);
             }
             if (Eventz.activeEvent == null && Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get() > 0) {
                 if (previousEventTime == 0) {

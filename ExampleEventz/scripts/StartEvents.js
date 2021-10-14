@@ -51,7 +51,7 @@ function startInterfaceBlockTest() {
 
 function startFoodExample() {
     return {
-        "timer": Date.prototype.getTime() + (1000 * 10)
+        "timer": Date.now() + (1000 * 10)
     };
 }
 
@@ -64,7 +64,7 @@ function kingOfTheHill() {
             "zMin": 0,
             "zMax": 20
         },
-        "timer": Date.prototype.getTime() + (1000 * 10)
+        "timer": Date.now() + (1000 * 10)
     };
 }
 
@@ -77,7 +77,8 @@ function testEventStartMethod() {
 function testBroadcastMsg() {
     return {
         "broadcastMessage": "Test test",
-        "mob": "minecraft:wolf"
+        "mob": "minecraft:wolf",
+        "runCommand": "tp @a 0 5 0"
     };
 }
 
@@ -88,7 +89,7 @@ function kothStart() {
 	]
 	
 	return {
-        "timer": Date.prototype.getTime() + Date.prototype.getTime() + (1000 * 60) * 10,
+        "timer": Date.now() + Date.now() + (1000 * 60) * 10,
 		"broadcastMessage": "Hill Location: " + position[0] + ", " + position[1],
 		"position": {
 			"x": position[0],

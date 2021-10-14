@@ -1,4 +1,9 @@
-October 12, 2021 pitbox46
+October 14, 2021 pitbox46
+-Added model/texture to interface
+-Added runCommand as metaData argument. Put in command as a string.
+-Date.prototype.getTime() converted to Date.now() in examples
+
+October 13, 2021 pitbox46
 -Added event JS event randomizer option
 
 October 12, 2021 pitbox46
