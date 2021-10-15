@@ -1,3 +1,6 @@
+October 15, 2021 pitbox46
+-Fixed bug with timer
+
 October 14, 2021 pitbox46
 -Added model/texture to interface
 -Added runCommand as metaData argument. Put in command as a string.

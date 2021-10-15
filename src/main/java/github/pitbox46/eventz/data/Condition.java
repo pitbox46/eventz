@@ -117,7 +117,7 @@ public class Condition {
             }
         }
         if (startObject != null) {
-            if (startObject.hasMember("timer") && startObject.getMember("timer") instanceof Integer) {
+            if (startObject.hasMember("timer") && startObject.getMember("timer") instanceof Number) {
                 endTime = ((Number) startObject.getMember("timer")).longValue();
             }
             if (startObject.hasMember("broadcastMessage") && startObject.getMember("broadcastMessage") instanceof String) {
