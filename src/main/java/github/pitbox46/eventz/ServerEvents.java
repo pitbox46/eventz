@@ -57,10 +57,10 @@ public class ServerEvents {
     public static FakePlayer fakePlayer;
     public static CommandSource commandSource;
     private static long previousEventTime = 0;
-    private static int cooldown;
+    private static long cooldown;
 
     public static void onEventStop() {
-        previousEventTime = System.currentTimeMillis() / 6000;
+        previousEventTime = System.currentTimeMillis();
         calculateCooldown();
         Eventz.activeEvent = null;
         Scoreboard scoreboard = Eventz.getServer().getScoreboard();
@@ -71,7 +71,7 @@ public class ServerEvents {
     }
 
     public static void calculateCooldown() {
-        cooldown = Config.LOWER_COOLDOWN.get() + Eventz.RANDOM.nextInt(Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get());
+        cooldown = (Config.LOWER_COOLDOWN.get() + Eventz.RANDOM.nextInt(Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get())) * 60000L;
     }
 
     public static void startRandomEvent() {
@@ -140,9 +140,9 @@ public class ServerEvents {
             }
             if (Eventz.activeEvent == null && Config.UPPER_COOLDOWN.get() - Config.LOWER_COOLDOWN.get() > 0) {
                 if (previousEventTime == 0) {
-                    previousEventTime = System.currentTimeMillis() / 6000;
+                    previousEventTime = System.currentTimeMillis();
                     calculateCooldown();
-                } else if (previousEventTime + cooldown < System.currentTimeMillis() / 6000) {
+                } else if (previousEventTime + cooldown < System.currentTimeMillis()) {
                     startRandomEvent();
                 }
             }

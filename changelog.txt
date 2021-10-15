@@ -1,5 +1,7 @@
 October 15, 2021 pitbox46
 -Fixed bug with timer
+-Fixed bug with timer between events
+-Updated localization
 
 October 14, 2021 pitbox46
 -Added model/texture to interface
