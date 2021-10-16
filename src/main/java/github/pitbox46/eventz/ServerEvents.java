@@ -23,6 +23,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.FolderName;
 import net.minecraftforge.common.MinecraftForge;
@@ -81,11 +82,14 @@ public class ServerEvents {
             }
             else {
                 try {
-                    String event = EventRegistration.getRandomizerEvent(eventHistory.toArray(), EventRegistration.EVENTS.keySet().toArray());
+                    String event = EventRegistration.getRandomizerEvent(eventHistory.toArray(), EventRegistration.EVENTS.keySet().toArray(), Eventz.getServer().getCurrentPlayerCount());
                     if(EventRegistration.EVENTS.containsKey(event)) {
                         startSpecificEvent(event);
-                    } else {
-                        defaultRandomizer();
+                    }
+                    else {
+                        sendGlobalMsg(new TranslationTextComponent("message.eventz.no_random_event"));
+                        previousEventTime = System.currentTimeMillis();
+                        calculateCooldown();
                     }
                 } catch (EventzScriptException e) {
                     defaultRandomizer();
@@ -95,11 +99,17 @@ public class ServerEvents {
     }
 
     private static void defaultRandomizer() {
-        int eventIndex = Eventz.RANDOM.nextInt(EventRegistration.EVENTS.size());
-        String eventKey = EventRegistration.EVENTS.keySet().stream().skip(eventIndex).findFirst().orElseThrow(IndexOutOfBoundsException::new);
-        Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(eventKey));
-        Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
-        eventHistory.add(0, eventKey);
+        if(Eventz.getServer().getCurrentPlayerCount() > 0) {
+            int eventIndex = Eventz.RANDOM.nextInt(EventRegistration.EVENTS.size());
+            String eventKey = EventRegistration.EVENTS.keySet().stream().skip(eventIndex).findFirst().orElseThrow(IndexOutOfBoundsException::new);
+            Eventz.activeEvent = new ActiveEvent(EventRegistration.EVENTS.get(eventKey));
+            Eventz.activeEvent.start(Eventz.getServer().getPlayerList());
+            eventHistory.add(0, eventKey);
+        } else {
+            sendGlobalMsg(new TranslationTextComponent("message.eventz.not_enough_players"));
+            previousEventTime = System.currentTimeMillis();
+            calculateCooldown();
+        }
     }
 
 

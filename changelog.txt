@@ -1,3 +1,8 @@
+October 16, 2021 pitbox46
+-Add player count parameter to randomizer
+-Added randomizer ability to not start event
+-If there are no players online, default randomizer will not start event
+
 October 15, 2021 pitbox46
 -Fixed bug with timer
 -Fixed bug with timer between events

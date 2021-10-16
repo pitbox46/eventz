@@ -1,6 +1,8 @@
 {
   "title.eventz.scoreboard": "Eventz Scoreboard!",
   "message.eventz.eventcomplete": "Winners of the event: %s",
+  "message.eventz.not_enough_players": "No players online, will not start event using default randomizer",
+  "message.eventz.no_random_event": "Randomizer elected to not start an event",
   "message.eventz.random_craft": "Craft the random recipe crafted from the item: %s",
   "message.eventz.random_smelt": "Smelt the recipe smelted from the item: %s",
 
