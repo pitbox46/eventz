@@ -1,3 +1,6 @@
+October 18, 2021 pitbox46
+-Fixed bug with players entering after the event has started
+
 October 16, 2021 pitbox46
 -Add player count parameter to randomizer
 -Added randomizer ability to not start event

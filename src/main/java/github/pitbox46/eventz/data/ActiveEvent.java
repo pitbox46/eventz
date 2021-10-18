@@ -253,6 +253,9 @@ public class ActiveEvent {
                     newGate.enable(contestant.getPlayers());
                 }
             } else {
+                EventGate gate = event.gates.get(i);
+                contestant.onStartGate(gate);
+                gate.enable(contestant.getPlayers());
                 break;
             }
         }
