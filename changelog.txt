@@ -1,3 +1,6 @@
+December 22, 2021 pitbox46
+-Updated mods.toml to work with Moneta Money 1.16.5-1.1.0
+
 October 18, 2021 pitbox46
 -Fixed bug with players entering after the event has started
 
